@@ -2,7 +2,7 @@
 
 | Item              | Status |
 | ----------------- | ------ |
-| Earth/Moon 3D scene | OK (three.js textures) |
+| Earth/Moon 3D scene | OK (three.js textures); top-left HUD: Earth / Moon distances + speed (Horizons state vector) |
 | Orion mesh (trajectory scene) | Stylized procedural marker |
 | Ship tab media    | Bundled JPEGs in `public/ship/` |
 | Crew tab media    | Bundled JPEGs in `public/crew/` (group + four portraits) |

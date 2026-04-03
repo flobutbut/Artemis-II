@@ -300,8 +300,21 @@ async function refreshInstantStates() {
   }
 }
 
-/** Full mission arc: launch → end of Horizons ephemeris. */
-const MISSION_TRAJ_STEP = '1 h'
+/** Full mission arc: fine step near Earth (first 24 h), coarse step for the rest. */
+const TRAJ_FINE_STEP_MS = 24 * 3600 * 1000   // 24 h in ms
+const TRAJ_FINE_STEP    = '15 min'
+const TRAJ_COARSE_STEP  = '1 h'
+// Keep a single label for TuileInfos display (use coarse step as representative)
+const MISSION_TRAJ_STEP = TRAJ_COARSE_STEP
+
+/**
+ * Assign timeMs to each row based on a fixed step, starting at startDate.
+ * More reliable than withUniformSampleTimes when rows come from mixed-step batches.
+ */
+function assignSampleTimes(rows, startDate, stepMs) {
+  const t0 = startDate.getTime()
+  return rows.map((r, i) => ({ ...r, timeMs: t0 + i * stepMs }))
+}
 
 function missionDateLabel(d) {
   return `${d.toISOString().slice(0, 16).replace('T', ' ')} UTC`
@@ -475,18 +488,31 @@ async function loadFullMissionTrajectory() {
   trajError.value = null
   trajStatus.value = 'Trajectory: loading Horizons…'
   try {
-    const rows = await fetchTrajectoryArc(
-      HORIZONS.ARTEMIS_II_ORION,
-      ARTEMIS_II_MISSION.trajectoryStartUtc,
-      ARTEMIS_II_MISSION.trajectoryEndUtc,
-      MISSION_TRAJ_STEP,
-    )
-    orionTrajTimed.value = withUniformSampleTimes(
-      rows,
-      ARTEMIS_II_MISSION.trajectoryStartUtc,
-      ARTEMIS_II_MISSION.trajectoryEndUtc,
-    )
-    const next = buildTrajectoryGroup(rows)
+    const fineEnd = new Date(ARTEMIS_II_MISSION.trajectoryStartUtc.getTime() + TRAJ_FINE_STEP_MS)
+
+    // Fetch both segments in parallel: fine (15 min) near Earth + coarse (1 h) for the rest
+    const [fineRows, coarseRows] = await Promise.all([
+      fetchTrajectoryArc(HORIZONS.ARTEMIS_II_ORION, ARTEMIS_II_MISSION.trajectoryStartUtc, fineEnd, TRAJ_FINE_STEP),
+      fetchTrajectoryArc(HORIZONS.ARTEMIS_II_ORION, fineEnd, ARTEMIS_II_MISSION.trajectoryEndUtc, TRAJ_COARSE_STEP),
+    ])
+
+    // Assign correct timeMs using the actual step of each segment (not uniform across the whole arc)
+    const FINE_STEP_MS   = 15 * 60 * 1000
+    const COARSE_STEP_MS = 60 * 60 * 1000
+    const fineTimed   = assignSampleTimes(fineRows, ARTEMIS_II_MISSION.trajectoryStartUtc, FINE_STEP_MS)
+    // coarseRows[0] == fineEnd, overlaps with fineTimed's last point → skip index 0
+    // coarseRows[1] is fineEnd + 1 h, so offset i+1 to get the right absolute timeMs
+    const coarseTimed = coarseRows.slice(1).map((r, i) => ({
+      ...r,
+      timeMs: fineEnd.getTime() + (i + 1) * COARSE_STEP_MS,
+    }))
+
+    const mergedTimed = [...fineTimed, ...coarseTimed]
+    const mergedRows  = [...fineRows, ...coarseRows.slice(1)]
+
+    orionTrajTimed.value = mergedTimed
+
+    const next = buildTrajectoryGroup(mergedRows)
     if (!next) {
       trajStatus.value = 'Trajectory: not enough points'
       trajError.value = 'Ephemeris received but path invalid (insufficient points).'
@@ -496,7 +522,7 @@ async function loadFullMissionTrajectory() {
       disposeTrajectory(trajectoryRoot)
       trajectoryRoot = next
       scene.add(trajectoryRoot)
-      trajStatus.value = `Trajectory: polyline (${rows.length} Horizons samples)`
+      trajStatus.value = `Trajectory: polyline (${mergedRows.length} pts — ${fineRows.length}×15 min + ${coarseRows.length - 1}×1 h)`
     }
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e)
@@ -712,6 +738,29 @@ onUnmounted(() => {
     <canvas ref="canvasRef" class="canvas" />
     <div v-if="loading" class="overlay">Loading textures…</div>
     <div v-else-if="textureError" class="overlay soft">{{ textureError }}</div>
+    <div
+      v-if="!loading"
+      class="telemetry-hud ds-panel ds-panel--glass"
+      aria-label="Orion instantaneous telemetry"
+      aria-live="polite"
+    >
+      <dl class="telemetry-hud__dl">
+        <div class="telemetry-hud__row">
+          <dt>Distance to Earth center</dt>
+          <dd>{{ telemetry.distEarth }}</dd>
+        </div>
+        <div class="telemetry-hud__row">
+          <dt>Distance to Moon center</dt>
+          <dd>{{ telemetry.distMoon }}</dd>
+        </div>
+        <div class="telemetry-hud__row">
+          <dt>Speed (state vector)</dt>
+          <dd>{{ telemetry.speed }}</dd>
+        </div>
+      </dl>
+      <p v-if="ephemLoading" class="telemetry-hud__status ds-text-caption">Loading ephemeris…</p>
+      <p v-else-if="ephemError" class="telemetry-hud__status ds-text-caption ds-text-danger">{{ ephemError }}</p>
+    </div>
     <TuileInfos
       :telemetry="telemetry"
       :ephem-loading="ephemLoading"
@@ -761,5 +810,50 @@ onUnmounted(() => {
   font-size: var(--ds-font-size-base);
   color: var(--ds-color-text-secondary);
   background: transparent;
+}
+
+.telemetry-hud {
+  position: absolute;
+  top: var(--ds-space-4);
+  left: var(--ds-space-4);
+  z-index: 2;
+  max-width: min(22rem, calc(100% - 2 * var(--ds-space-4)));
+  padding: var(--ds-space-3);
+  font-size: var(--ds-font-size-sm);
+  pointer-events: none;
+}
+
+.telemetry-hud__dl {
+  margin: 0;
+}
+
+.telemetry-hud__row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--ds-space-1) var(--ds-space-3);
+  align-items: baseline;
+}
+
+.telemetry-hud__row + .telemetry-hud__row {
+  margin-top: var(--ds-space-2);
+}
+
+.telemetry-hud__dl dt {
+  margin: 0;
+  color: var(--ds-color-text-secondary);
+  font-weight: var(--ds-font-weight-normal);
+}
+
+.telemetry-hud__dl dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  color: var(--ds-color-text-primary);
+}
+
+.telemetry-hud__status {
+  margin: var(--ds-space-2) 0 0;
+  padding-top: var(--ds-space-2);
+  border-top: 1px solid var(--ds-color-border-subtle);
 }
 </style>
