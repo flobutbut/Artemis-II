@@ -159,7 +159,7 @@
   font-family: var(--ds-font-family-sans);
   font-size: var(--ds-font-size-xl);
   font-weight: var(--ds-font-weight-semibold);
-  color: var(--ds-color-text-accent);
+  color: var(--ds-color-text-primary);
   letter-spacing: var(--ds-letter-spacing-tight);
 }
 
@@ -167,7 +167,7 @@
   padding: var(--ds-space-4) 18px 18px;
   overflow-y: auto;
   font-family: var(--ds-font-family-sans);
-  font-size: var(--ds-font-size-md);
+  font-size: var(--ds-font-size-sm);
   line-height: var(--ds-line-height-normal);
   color: var(--ds-color-text-primary);
 }
@@ -178,8 +178,8 @@
   font-family: var(--ds-font-family-sans);
   font-size: var(--ds-font-size-lg);
   font-weight: var(--ds-font-weight-semibold);
-  color: var(--ds-color-text-accent);
-  letter-spacing: var(--ds-letter-spacing-wide);
+  color: var(--ds-color-text-primary);
+  letter-spacing: var(--ds-letter-spacing-tight);
   line-height: var(--ds-line-height-tight);
 }
 
@@ -188,7 +188,7 @@
   font-family: var(--ds-font-family-sans);
   font-size: var(--ds-font-size-sm);
   font-weight: var(--ds-font-weight-semibold);
-  color: var(--ds-color-text-heading-muted);
+  color: var(--ds-color-text-primary);
   letter-spacing: var(--ds-letter-spacing-tight);
   line-height: var(--ds-line-height-normal);
 }
@@ -196,6 +196,7 @@
 /* ——— Utility type ——— */
 .ds-text-caption {
   font-size: var(--ds-font-size-sm);
+  font-weight: var(--ds-font-weight-regular);
   line-height: var(--ds-line-height-snug);
   color: var(--ds-color-text-secondary);
 }

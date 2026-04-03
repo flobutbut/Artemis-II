@@ -66,6 +66,11 @@ const sources = [
         href: 'https://www.nasa.gov/trackartemis',
         note: 'Official interactive tracking.',
       },
+      {
+        label: 'NASA Live (YouTube)',
+        href: 'https://www.youtube.com/watch?v=6RwfNBtepa4',
+        note: 'Embedded in the Trajectory side tile (“NASA Live” tab); availability depends on NASA / YouTube.',
+      },
     ],
   },
   {
@@ -90,6 +95,21 @@ const sources = [
         label: 'NASA — Images and Media Usage Guidelines',
         href: 'https://www.nasa.gov/nasa-brand-center/images-and-media/',
         note: 'For any reuse of NASA content.',
+      },
+      {
+        label: 'NASA Image and Video Library',
+        href: 'https://images.nasa.gov/',
+        note: 'Source pages for bundled photos in `public/crew/` and `public/ship/`.',
+      },
+      {
+        label: 'Wikimedia Commons',
+        href: 'https://commons.wikimedia.org/',
+        note: 'Original portrait files (NASA / JSC); copies ship in-repo for reliable loading.',
+      },
+      {
+        label: 'NASA-3D-Resources (GitHub)',
+        href: 'https://github.com/nasa/NASA-3D-Resources',
+        note: 'Optional reference printable models (not used in the Ship tab).',
       },
     ],
   },

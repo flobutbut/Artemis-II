@@ -21,12 +21,24 @@
 
   --ds-palette-amber-400: #ff9f7a;
 
+  /* Cool gray (chrome, secondary labels, inert controls) */
+  --ds-palette-neutral-400: #a3b0c8;
+  --ds-palette-neutral-500: #8a9ab8;
+  --ds-palette-neutral-600: #6b7a99;
+  --ds-palette-neutral-700: #5a6782;
+
+  /* Red (alerts, errors, emphasis, recording-style indicators) */
+  --ds-palette-red-600: #e03838;
+  --ds-palette-red-500: #ff4444;
+  --ds-palette-red-400: #ff7878;
+  --ds-palette-red-200: #ffb4b4;
+  --ds-palette-red-100: #ffc8c8;
+
   --ds-palette-white: #ffffff;
   --ds-palette-black: #000000;
 
   /* ——— Semantic — surface ——— */
   --ds-color-bg-app: var(--ds-palette-space-900);
-  --ds-color-bg-canvas: var(--ds-palette-space-900);
   --ds-color-surface-base: rgba(12, 18, 32, 0.82);
   --ds-color-surface-raised: rgba(12, 18, 32, 0.88);
   --ds-color-surface-overlay: rgba(12, 18, 32, 0.97);
@@ -42,8 +54,8 @@
 
   /* ——— Semantic — text ——— */
   --ds-color-text-primary: #e8eef8;
-  --ds-color-text-secondary: #8a9ab8;
-  --ds-color-text-tertiary: #6b7a99;
+  --ds-color-text-secondary: var(--ds-palette-neutral-500);
+  --ds-color-text-tertiary: var(--ds-palette-neutral-600);
   --ds-color-text-accent: var(--ds-palette-cyan-400);
   --ds-color-text-code: var(--ds-palette-cyan-100);
   --ds-color-text-heading-muted: var(--ds-palette-cyan-200);
@@ -55,7 +67,23 @@
   --ds-color-accent-muted: rgba(110, 184, 255, 0.12);
   --ds-color-accent-hover: rgba(110, 184, 255, 0.18);
   --ds-color-accent-strong: rgba(110, 184, 255, 0.22);
+  --ds-color-accent-progress: rgba(110, 184, 255, 0.42);
   --ds-color-focus-ring: var(--ds-palette-cyan-400);
+
+  /* ——— Semantic — neutral (borders, fills, rings on dark UI) ——— */
+  --ds-color-neutral-border: rgba(138, 154, 184, 0.4);
+  --ds-color-neutral-border-hover: rgba(138, 154, 184, 0.55);
+  --ds-color-neutral-fill: rgba(138, 154, 184, 0.55);
+  --ds-color-neutral-fill-muted: rgba(138, 154, 184, 0.28);
+  --ds-color-neutral-ring: rgba(2, 6, 14, 0.4);
+
+  /* ——— Semantic — red (borders, text, fills, glow) ——— */
+  --ds-color-red-border: rgba(255, 95, 95, 0.85);
+  --ds-color-red-border-hover: rgba(255, 120, 120, 0.95);
+  --ds-color-red-text: var(--ds-palette-red-200);
+  --ds-color-red-text-hover: var(--ds-palette-red-100);
+  --ds-color-red-fill: var(--ds-palette-red-500);
+  --ds-color-red-ring: rgba(40, 0, 0, 0.35);
 
   /* ——— Typography ——— */
   --ds-font-family-sans: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
@@ -64,9 +92,8 @@
   --ds-font-size-2xs: 10px;
   --ds-font-size-xs: 11px;
   --ds-font-size-sm: 12px;
-  --ds-font-size-md: 12px;
   --ds-font-size-base: 13px;
-  --ds-font-size-lg: 13px;
+  --ds-font-size-lg: 14px;
   --ds-font-size-xl: 16px;
   --ds-font-size-2xl: 18px;
   --ds-font-size-icon: 22px;
@@ -81,7 +108,6 @@
   --ds-line-height-relaxed: 1.45;
 
   --ds-letter-spacing-tight: 0.5px;
-  --ds-letter-spacing-wide: 0.5px;
   --ds-letter-spacing-wider: 1px;
 
   /* ——— Spacing (4px scale, 1rem = 16px equivalent) ——— */
@@ -95,6 +121,7 @@
   --ds-space-8: 32px;
 
   /* ——— Radii ——— */
+  --ds-radius-xs: 2px;
   --ds-radius-sm: 6px;
   --ds-radius-md: 8px;
   --ds-radius-lg: 10px;
@@ -106,6 +133,7 @@
   --ds-blur-modal: 6px;
 
   --ds-shadow-modal: 0 16px 48px rgba(0, 0, 0, 0.45);
+  --ds-shadow-red-soft: 0 0 4px rgba(255, 70, 70, 0.4);
 
   /* ——— Z-index ——— */
   --ds-z-modal: 10000;
@@ -114,6 +142,16 @@
   --ds-duration-fast: 120ms;
   --ds-duration-normal: 200ms;
   --ds-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+
+  /* ——— Chrome — scrollbars ——— */
+  --ds-scrollbar-width: 8px;
+  --ds-color-scrollbar-track: rgba(18, 26, 42, 0.65);
+  --ds-color-scrollbar-thumb: rgba(110, 184, 255, 0.32);
+  --ds-color-scrollbar-thumb-hover: rgba(110, 184, 255, 0.52);
+
+  /* ——— Component geometry ——— */
+  --ds-size-dot: 5px;       /* indicator dot (LiveModeButton) */
+  --ds-size-logo: 32px;     /* header logo / mission patch */
 
   /* ——— Legacy aliases (components / style.css) ——— */
   --bg: var(--ds-color-bg-app);

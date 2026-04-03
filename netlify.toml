@@ -8,3 +8,9 @@
   to = "https://ssd.jpl.nasa.gov/api/horizons.api"
   status = 200
   force = true
+
+[[redirects]]
+  from = "/nasa-missions-blog-feed"
+  to = "https://www.nasa.gov/blogs/missions/feed/"
+  status = 200
+  force = true

@@ -1,12 +1,14 @@
 <script setup>
 import { ref, computed, watch, onUnmounted } from 'vue'
-import SourcesButton from './SourcesButton.vue'
+import LiveModeButton from './LiveModeButton.vue'
+import MissionEvents from './MissionEvents.vue'
 
 const props = defineProps({
   missionStart: { type: Date, required: true },
   missionEnd: { type: Date, required: true },
   live: { type: Boolean, default: true },
   at: { type: Date, required: true },
+  events: { type: Array, default: () => [] },
 })
 
 const emit = defineEmits(['update:live', 'update:at'])
@@ -115,6 +117,11 @@ function goLive() {
   emit('update:at', new Date())
 }
 
+function onEventSeek(timeMs) {
+  emit('update:live', false)
+  emit('update:at', new Date(timeMs))
+}
+
 const sliderMin = 0
 const sliderMax = 100
 const sliderValue = computed(() => Math.round(thumbPct.value * 100) / 100)
@@ -169,9 +176,17 @@ function onKeydown(e) {
         @pointerdown="onThumbPointerDown"
         @keydown="onKeydown"
       />
+      <MissionEvents
+        v-if="events.length"
+        :events="events"
+        :mission-start="missionStart"
+        :mission-end="missionEnd"
+        :current-at="new Date(effectiveMs)"
+        @seek="onEventSeek"
+      />
     </div>
     <time class="mission-timeline__time" :datetime="isoDatetime">{{ labelText }}</time>
-    <SourcesButton variant="ghost" class="mission-timeline__live" @click="goLive">Live</SourcesButton>
+    <LiveModeButton :live="live" @click="goLive" />
   </div>
 </template>
 
@@ -204,8 +219,8 @@ function onKeydown(e) {
   top: 50%;
   height: 3px;
   margin-top: -1.5px;
-  border-radius: 2px;
-  background: rgba(110, 184, 255, 0.18);
+  border-radius: var(--ds-radius-xs);
+  background: var(--ds-color-accent-hover);
   pointer-events: none;
 }
 
@@ -215,8 +230,8 @@ function onKeydown(e) {
   top: 50%;
   height: 3px;
   margin-top: -1.5px;
-  border-radius: 2px;
-  background: rgba(110, 184, 255, 0.42);
+  border-radius: var(--ds-radius-xs);
+  background: var(--ds-color-accent-progress);
   pointer-events: none;
   max-width: 100%;
 }
@@ -229,9 +244,9 @@ function onKeydown(e) {
   margin: -9px 0 0 -5px;
   padding: 0;
   border: none;
-  border-radius: 2px;
+  border-radius: var(--ds-radius-xs);
   background: var(--ds-palette-cyan-400);
-  box-shadow: 0 0 0 1px rgba(2, 6, 14, 0.35);
+  box-shadow: 0 0 0 1px var(--ds-color-neutral-ring);
   cursor: grab;
   pointer-events: auto;
 }
@@ -257,7 +272,4 @@ function onKeydown(e) {
   font-variant-numeric: tabular-nums;
 }
 
-.mission-timeline__live {
-  flex-shrink: 0;
-}
 </style>

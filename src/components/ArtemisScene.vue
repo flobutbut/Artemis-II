@@ -21,7 +21,10 @@ const props = defineProps({
     type: Date,
     required: true,
   },
+  events: { type: Array, default: () => [] },
 })
+
+const emit = defineEmits(['computed-events'])
 
 /** Textures: official three.js examples (MIT license in the repo). */
 const TEX_EARTH = 'https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg'
@@ -31,9 +34,9 @@ const TEX_MOON = 'https://threejs.org/examples/textures/planets/moon_1024.jpg'
 const EARTH_R_KM = 6371.01
 const MOON_R_KM = 1737.4
 const SCENE_PER_KM = 1 / 170000
-const BODY_RADIUS_MUL = 1
+const BODY_RADIUS_MUL = 2
 /** Moon radius in scene: at least this minimum (position still from Horizons). */
-const MOON_DISPLAY_RADIUS_MIN = MOON_R_KM * SCENE_PER_KM * 2  // ×2 real scale
+const MOON_DISPLAY_RADIUS_MIN = MOON_R_KM * SCENE_PER_KM * 4  // ×4 real scale (×2 of previous ×2)
 const canvasRef = ref(null)
 const loading = ref(true)
 const textureError = ref(null)
@@ -69,7 +72,18 @@ let moonTrailRoot
 let clock
 
 let pollTimer = 0
+let livePositionTimer = 0
 let orbitTargetInitialized = false
+let eventsMarkersRoot = null
+
+const EVENT_COLORS = {
+  milestone: 0x4de8ff,
+  burn:      0xff9944,
+  flyby:     0xcc66ff,
+  reentry:   0xff5533,
+  landing:   0x44dd88,
+  info:      0x8899bb,
+}
 
 function createStarfield(count = 4000) {
   const positions = new Float32Array(count * 3)
@@ -130,7 +144,7 @@ function createOrion() {
   g.add(solar)
 
   /* Visible marker (Horizons-scale positions; mesh deliberately enlarged). */
-  g.scale.setScalar(0.014)
+  g.scale.setScalar(0.028)
   return g
 }
 
@@ -209,6 +223,37 @@ function buildTrajectoryGroup(rows) {
   return g
 }
 
+function buildEventMarkers(events, trajRows) {
+  const g = new THREE.Group()
+  g.name = 'missionEvents'
+  for (const ev of events) {
+    const row = interpolateTimedRows(trajRows, ev.timeMs)
+    if (!row) continue
+    const pos = rowToSceneVector(row)
+    if (!Number.isFinite(pos.x)) continue
+    const color = EVENT_COLORS[ev.type] ?? 0xffffff
+
+    // Inner bright dot
+    const innerMesh = new THREE.Mesh(
+      new THREE.SphereGeometry(0.016, 10, 10),
+      new THREE.MeshBasicMaterial({ color, depthTest: false }),
+    )
+    innerMesh.position.copy(pos)
+    innerMesh.renderOrder = 22
+    g.add(innerMesh)
+
+    // Outer translucent halo
+    const haloMesh = new THREE.Mesh(
+      new THREE.SphereGeometry(0.032, 10, 10),
+      new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.22, depthTest: false }),
+    )
+    haloMesh.position.copy(pos)
+    haloMesh.renderOrder = 21
+    g.add(haloMesh)
+  }
+  return g
+}
+
 function applyTelemetryFromRows(moon, orion) {
   const dEarth = orion.rg
   const dMoon = distanceKm(orion, moon)
@@ -246,16 +291,6 @@ async function refreshInstantStates() {
     orionRow.value = orion
     ephemError.value = null
     ephemUpdated.value = formatUtcTime(now)
-
-    // Center camera orbit target on Earth–Moon midpoint once on first load
-    if (!orbitTargetInitialized && controls) {
-      const moonPos = rowToSceneVector(moon)
-      // Earth stays at origin (0,0,0) in Horizons geocentric frame
-      controls.target.set(moonPos.x / 2, moonPos.y / 2, moonPos.z / 2)
-      controls.update()
-      orbitTargetInitialized = true
-    }
-
     applyTelemetryFromRows(moon, orion)
   } catch (e) {
     console.error('[Artemis] Horizons instant state — error:', e)
@@ -357,6 +392,83 @@ function buildMoonTrail(nowMs) {
 watch(moonRow, (row) => {
   if (!row) return
   buildMoonTrail(typeof row.timeMs === 'number' ? row.timeMs : Date.now())
+
+  // Center orbit target on Earth–Moon midpoint once, on first data (live or scrubbed).
+  // Earth is at origin in Horizons geocentric frame.
+  if (!orbitTargetInitialized && controls) {
+    const moonPos = rowToSceneVector(row)
+    controls.target.set(moonPos.x / 2, moonPos.y / 2, moonPos.z / 2)
+    controls.update()
+    orbitTargetInitialized = true
+  }
+})
+
+/**
+ * Derive key event timestamps directly from Horizons trajectory data.
+ * Returns a map { id → timeMs } for events that can be computed from positions.
+ * – lunar-flyby : sample where distance Orion–Moon is minimum
+ * – lunar-soi   : first inbound sample where distance Orion–Moon drops below 66 100 km
+ * – entry       : last sample where Orion geocentric distance rg > 6 493 km
+ *                 (Earth radius 6 371 + 122 km atmosphere entry altitude)
+ */
+function deriveEventTimes(orionRows, moonRows) {
+  const MOON_SOI_KM = 66_100
+  const ENTRY_RG_KM = 6_371 + 122
+
+  let minDist = Infinity
+  let flybyMs = null
+  let soiMs = null
+  let entryMs = null
+
+  for (let i = 0; i < orionRows.length; i++) {
+    const orRow = orionRows[i]
+    const mRow = interpolateTimedRows(moonRows, orRow.timeMs)
+    if (!mRow) continue
+
+    const d = distanceKm(orRow, mRow)
+
+    // Closest lunar approach
+    if (d < minDist) {
+      minDist = d
+      flybyMs = orRow.timeMs
+    }
+
+    // First inbound SOI crossing (distance decreasing and crossing threshold)
+    if (soiMs === null && i > 0) {
+      const prev = orionRows[i - 1]
+      const prevM = interpolateTimedRows(moonRows, prev.timeMs)
+      if (prevM) {
+        const dPrev = distanceKm(prev, prevM)
+        if (dPrev > MOON_SOI_KM && d <= MOON_SOI_KM) {
+          soiMs = orRow.timeMs
+        }
+      }
+    }
+
+    // Last sample still above entry altitude (Orion still in space)
+    if (orRow.rg > ENTRY_RG_KM) {
+      entryMs = orRow.timeMs
+    }
+  }
+
+  return { flybyMs, soiMs, entryMs }
+}
+
+// Once both Orion trajectory and Moon orbit are loaded, compute precise event times
+// and emit them so App.vue can override the static estimates.
+watch([orionTrajTimed, moonOrbitTimed], ([orionRows, moonRows]) => {
+  if (!orionRows?.length || !moonRows?.length) return
+  const { flybyMs, soiMs, entryMs } = deriveEventTimes(orionRows, moonRows)
+  emit('computed-events', { flybyMs, soiMs, entryMs })
+})
+
+// Rebuild 3D event markers when trajectory loads or when computed event times arrive
+watch([orionTrajTimed, () => props.events], ([timed, events]) => {
+  disposeTrajectory(eventsMarkersRoot)
+  eventsMarkersRoot = null
+  if (!timed?.length || !events?.length || !scene) return
+  eventsMarkersRoot = buildEventMarkers(events, timed)
+  scene.add(eventsMarkersRoot)
 })
 
 async function loadFullMissionTrajectory() {
@@ -535,6 +647,16 @@ onMounted(async () => {
   void loadMoonOrbit()
   pollTimer = window.setInterval(refreshInstantStates, 90_000)
 
+  function restartLivePositionTimer() {
+    clearInterval(livePositionTimer)
+    livePositionTimer = 0
+    if (!props.timelineLive) return
+    if (!orionTrajTimed.value?.length || !moonOrbitTimed.value?.length) return
+    livePositionTimer = window.setInterval(() => {
+      if (props.timelineLive) applyScrubbedState(new Date())
+    }, 1000)
+  }
+
   watch(
     [
       () => props.timelineLive,
@@ -543,11 +665,15 @@ onMounted(async () => {
       moonOrbitTimed,
     ],
     () => {
+      clearInterval(livePositionTimer)
+      livePositionTimer = 0
+
       if (!props.timelineLive && orionTrajTimed.value?.length && moonOrbitTimed.value?.length) {
         applyScrubbedState(props.timelineAt)
       }
       if (props.timelineLive) {
         void refreshInstantStates()
+        restartLivePositionTimer()
       }
     },
   )
@@ -556,6 +682,7 @@ onMounted(async () => {
 onUnmounted(() => {
   cancelAnimationFrame(frameId)
   window.clearInterval(pollTimer)
+  window.clearInterval(livePositionTimer)
   window.removeEventListener('resize', onResize)
   disposeTrajectory(trajectoryRoot)
   trajectoryRoot = null
@@ -563,6 +690,8 @@ onUnmounted(() => {
   moonOrbitRoot = null
   disposeTrajectory(moonTrailRoot)
   moonTrailRoot = null
+  disposeTrajectory(eventsMarkersRoot)
+  eventsMarkersRoot = null
   controls?.dispose()
   renderer?.dispose()
   scene?.traverse((obj) => {

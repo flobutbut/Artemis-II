@@ -8,6 +8,11 @@ const horizonsProxy = {
     rewrite: (path) =>
       '/api/horizons.api' + (path.includes('?') ? path.slice(path.indexOf('?')) : ''),
   },
+  '/nasa-missions-blog-feed': {
+    target: 'https://www.nasa.gov',
+    changeOrigin: true,
+    rewrite: () => '/blogs/missions/feed/',
+  },
 }
 
 export default defineConfig({
