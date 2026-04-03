@@ -5,8 +5,12 @@
  */
 export const NASA_MISSIONS_BLOG_RSS_URL = 'https://www.nasa.gov/blogs/missions/feed/'
 
-/** Same-origin path proxied in dev (Vite) and prod (Netlify). */
-export const NASA_MISSIONS_BLOG_PROXY_PATH = '/nasa-missions-blog-feed'
+/** Same-origin path proxied in dev (Vite) and prod (Netlify); respects `import.meta.env.BASE_URL`. */
+export function nasaMissionsBlogProxyPath() {
+  const b = import.meta.env.BASE_URL ?? '/'
+  const base = b.endsWith('/') ? b : `${b}/`
+  return `${base}nasa-missions-blog-feed`
+}
 
 /** Keep tile focused on Artemis II; the blog also covers other missions. */
 const ARTEMIS_II_IN_TITLE = /artemis\s*ii/i
@@ -38,7 +42,7 @@ export function parseMissionsBlogRss(xmlText, limit = 8) {
  * @returns {Promise<{ title: string, link: string, pubDate: string }[]>}
  */
 export async function fetchMissionsBlogArtemis2Items(limit = 8) {
-  const res = await fetch(NASA_MISSIONS_BLOG_PROXY_PATH, {
+  const res = await fetch(nasaMissionsBlogProxyPath(), {
     headers: { Accept: 'application/rss+xml, application/xml, text/xml, */*' },
   })
   if (!res.ok) {

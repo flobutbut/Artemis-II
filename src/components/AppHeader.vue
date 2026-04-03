@@ -3,6 +3,9 @@ import { ref } from 'vue'
 import SourcesModal from './SourcesModal.vue'
 import SourcesButton from './SourcesButton.vue'
 import DsTabs from './DsTabs.vue'
+import { publicUrl } from '../lib/public-path.js'
+
+const patchSrc = publicUrl('artemis-ii-patch.svg')
 
 defineProps({
   modelValue: { type: String, required: true },
@@ -21,7 +24,7 @@ const showSources = ref(false)
         <div class="brand">
           <img
             class="brand__logo"
-            src="/artemis-ii-patch.svg"
+            :src="patchSrc"
             width="32"
             height="33"
             alt="Artemis II mission insignia (NASA)"

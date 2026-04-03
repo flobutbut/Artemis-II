@@ -7,8 +7,10 @@
  * Ship tab: files in `public/ship/` (NASA Image Library originals).
  */
 
+import { publicUrl } from '../lib/public-path.js'
+
 export const CREW_GROUP_PHOTO = {
-  src: '/crew/group-artemis-ii.jpg',
+  src: publicUrl('crew/group-artemis-ii.jpg'),
   alt: 'Artemis II crew official portrait: Reid Wiseman, Victor Glover, Christina Koch, Jeremy Hansen',
   credit: 'NASA / Josh Valcarcel',
   href: 'https://images.nasa.gov/details/jsc2023e016432_alt2',
@@ -21,7 +23,7 @@ export const CREW_MEMBERS = [
     agency: 'NASA',
     note: 'U.S. Navy test pilot; prior long-duration stay on the International Space Station (Expedition 41).',
     portrait: {
-      src: '/crew/portrait-wiseman.jpg',
+      src: publicUrl('crew/portrait-wiseman.jpg'),
       alt: 'Official portrait of NASA astronaut Reid Wiseman',
       credit: 'NASA / Johnson Space Center (Wikimedia Commons)',
       href: 'https://en.wikipedia.org/wiki/Reid_Wiseman',
@@ -34,7 +36,7 @@ export const CREW_MEMBERS = [
     agency: 'NASA',
     note: 'U.S. Navy aviator and test pilot; first Black astronaut on a lunar-class mission.',
     portrait: {
-      src: '/crew/portrait-glover.jpg',
+      src: publicUrl('crew/portrait-glover.jpg'),
       alt: 'Official portrait of NASA astronaut Victor Glover',
       credit: 'NASA / Johnson Space Center (Wikimedia Commons)',
       href: 'https://en.wikipedia.org/wiki/Victor_Glover',
@@ -47,7 +49,7 @@ export const CREW_MEMBERS = [
     agency: 'NASA',
     note: 'Electrical engineer; first woman on a lunar mission under the Artemis program.',
     portrait: {
-      src: '/crew/portrait-koch.jpg',
+      src: publicUrl('crew/portrait-koch.jpg'),
       alt: 'Official portrait of NASA astronaut Christina Koch',
       credit: 'NASA / Johnson Space Center (Wikimedia Commons)',
       href: 'https://en.wikipedia.org/wiki/Christina_Koch',
@@ -60,7 +62,7 @@ export const CREW_MEMBERS = [
     agency: 'Canadian Space Agency (CSA)',
     note: 'Fighter pilot; first Canadian on a lunar mission.',
     portrait: {
-      src: '/crew/portrait-hansen.jpg',
+      src: publicUrl('crew/portrait-hansen.jpg'),
       alt: 'Official portrait of CSA astronaut Jeremy Hansen',
       credit: 'NASA / Johnson Space Center (Wikimedia Commons)',
       href: 'https://en.wikipedia.org/wiki/Jeremy_Hansen',
@@ -102,7 +104,7 @@ export const SHIP_SYSTEMS = [
       'NASA’s deep-space crew vehicle: crew module, European Service Module (power, propulsion, thermal), heat shield, and launch abort system stack for ascent.',
     href: 'https://www.nasa.gov/humans-in-space/orion-spacecraft/',
     shipPhoto: {
-      src: '/ship/orion-pad.jpg',
+      src: publicUrl('ship/orion-pad.jpg'),
       alt: 'Wide view of Artemis I Space Launch System and Orion spacecraft at Launch Pad 39B at sunrise, Kennedy Space Center',
       credit: 'NASA / Ben Smegelsky',
       href: 'https://images.nasa.gov/details/KSC-20220411-PH-JBS01_0004',
@@ -114,7 +116,7 @@ export const SHIP_SYSTEMS = [
       'Heavy-lift rocket in a crew configuration for Artemis II: twin solid rocket boosters, core stage (RS-25 engines), and upper stage stack to send Orion toward the Moon.',
     href: 'https://www.nasa.gov/exploration/systems/sls/',
     shipPhoto: {
-      src: '/ship/sls-rollout.jpg',
+      src: publicUrl('ship/sls-rollout.jpg'),
       alt: 'Artemis I fully stacked SLS with Orion rolling out at Kennedy; Vehicle Assembly Building and countdown clock in the background',
       credit: 'NASA / Ben Smegelsky',
       href: 'https://images.nasa.gov/details/KSC-20220816-PH-JBS01_0144',
@@ -126,7 +128,7 @@ export const SHIP_SYSTEMS = [
       'Interim Cryogenic Propulsion Stage performs in-space burns (e.g. translunar injection) after core stage separation.',
     href: 'https://www.nasa.gov/sls/',
     shipPhoto: {
-      src: '/ship/icps-vab.jpg',
+      src: publicUrl('ship/icps-vab.jpg'),
       alt: 'ICPS integration with launch vehicle stage adapter atop the SLS core stage inside the Vehicle Assembly Building high bay',
       credit: 'NASA / Kim Shiflett',
       href: 'https://images.nasa.gov/details/KSC-20210705-PH-KLS01_0097',
@@ -138,7 +140,7 @@ export const SHIP_SYSTEMS = [
       'Mobile Launcher, Vehicle Assembly Building, and Launch Complex 39B at Kennedy Space Center integrate, fuel, and launch the vehicle.',
     href: 'https://www.nasa.gov/kennedy/ground-systems-development-and-integration-program/',
     shipPhoto: {
-      src: '/ship/mobile-launcher-pad.jpg',
+      src: publicUrl('ship/mobile-launcher-pad.jpg'),
       alt: 'Aerial wide view of Mobile Launcher 1 on Launch Pad 39B at Kennedy Space Center',
       credit: 'NASA / Frank Michaux',
       href: 'https://images.nasa.gov/details/KSC-20190628-PH_FWM01_0146',

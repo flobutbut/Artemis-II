@@ -15,7 +15,11 @@ const horizonsProxy = {
   },
 }
 
+/** GitHub Pages project sites use `/<repo>/`; set `VITE_BASE` in CI (see `.github/workflows/deploy-pages.yml`). */
+const base = process.env.VITE_BASE ?? '/'
+
 export default defineConfig({
+  base,
   plugins: [vue()],
   server: { proxy: horizonsProxy },
   preview: { proxy: horizonsProxy },

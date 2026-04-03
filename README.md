@@ -36,6 +36,10 @@ npm run preview
 
 Live mission tracking: [NASA AROW — trackartemis](https://www.nasa.gov/trackartemis).
 
+## GitHub Pages
+
+After pushing to `main`, enable **Settings → Pages → Source: GitHub Actions**. The workflow `.github/workflows/deploy-pages.yml` publishes `dist/`. GitHub Pages does not provide the JPL/NASA **proxies** used on Netlify; for live ephemeris and the Missions RSS in production, prefer Netlify or another host with URL rewrites (see `docs/Documentation-technique.md` → Deployment).
+
 ## Project documentation
 
 See the `docs/` folder:
