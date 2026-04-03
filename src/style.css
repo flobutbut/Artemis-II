@@ -1,0 +1,19 @@
+@import './styles/tokens.css';
+@import './styles/ui.css';
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--ds-font-family-sans);
+  font-size: var(--ds-font-size-base);
+  background: var(--ds-color-bg-app);
+  color: var(--ds-color-text-primary);
+}

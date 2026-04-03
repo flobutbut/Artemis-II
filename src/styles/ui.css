@@ -1,0 +1,214 @@
+/**
+ * Design system — patterns UI réutilisables (boutons, liens, panneaux, modale, typo utilitaire).
+ * Ne s’applique pas au canvas WebGL ; uniquement aux éléments HTML marqués par ces classes.
+ */
+
+/* ——— Focus clavier ——— */
+.ds-focusable:focus {
+  outline: none;
+}
+
+.ds-focusable:focus-visible {
+  outline: 2px solid var(--ds-color-focus-ring);
+  outline-offset: 2px;
+}
+
+/* ——— Boutons ——— */
+.ds-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ds-space-2);
+  margin: 0;
+  padding: var(--ds-space-2) var(--ds-space-4);
+  border-radius: var(--ds-radius-md);
+  font-family: var(--ds-font-family-sans);
+  font-size: var(--ds-font-size-base);
+  font-weight: var(--ds-font-weight-medium);
+  line-height: var(--ds-line-height-tight);
+  cursor: pointer;
+  transition:
+    background-color var(--ds-duration-fast) var(--ds-ease-standard),
+    border-color var(--ds-duration-fast) var(--ds-ease-standard),
+    color var(--ds-duration-fast) var(--ds-ease-standard);
+}
+
+.ds-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Secondaire : bordure accent, fond discret (ex. Sources) */
+.ds-btn--secondary {
+  border: 1px solid var(--ds-color-border-interactive);
+  background: var(--ds-color-accent-subtle);
+  color: var(--ds-color-text-accent);
+}
+
+.ds-btn--secondary:hover:not(:disabled) {
+  background: var(--ds-color-accent-hover);
+  border-color: var(--ds-color-border-interactive-hover);
+}
+
+/* Fantôme : peu de fond */
+.ds-btn--ghost {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--ds-color-text-accent);
+}
+
+.ds-btn--ghost:hover:not(:disabled) {
+  background: var(--ds-color-accent-subtle);
+  border-color: var(--ds-color-border-default);
+}
+
+/* Icône seule (ex. fermer modale) */
+.ds-btn--icon {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: var(--ds-radius-md);
+  background: var(--ds-color-accent-muted);
+  color: var(--ds-color-text-primary);
+  font-size: var(--ds-font-size-icon);
+  line-height: 1;
+}
+
+.ds-btn--icon:hover:not(:disabled) {
+  background: var(--ds-color-accent-strong);
+}
+
+.ds-btn.ds-focusable:focus-visible {
+  outline: 2px solid var(--ds-color-focus-ring);
+  outline-offset: 2px;
+}
+
+/* ——— Liens ——— */
+.ds-link {
+  color: var(--ds-color-text-accent);
+  text-decoration: none;
+  font-weight: var(--ds-font-weight-medium);
+  transition: opacity var(--ds-duration-fast) var(--ds-ease-standard);
+}
+
+.ds-link:hover {
+  opacity: 0.88;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ——— Panneaux chrome ——— */
+.ds-panel {
+  background: var(--ds-color-surface-base);
+  border: 1px solid var(--ds-color-border-subtle);
+  border-radius: var(--ds-radius-lg);
+  backdrop-filter: blur(var(--ds-blur-panel));
+}
+
+/* Tuile flottante / HUD */
+.ds-panel--glass {
+  background: var(--ds-color-surface-raised);
+  border-color: var(--ds-color-border-default);
+  backdrop-filter: blur(var(--ds-blur-glass));
+}
+
+/* Barre app (header / footer) */
+.ds-panel--bar {
+  background: var(--ds-color-surface-base);
+  border-color: var(--ds-color-border-subtle);
+  backdrop-filter: blur(var(--ds-blur-panel));
+}
+
+/* ——— Modale ——— */
+.ds-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--ds-z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ds-space-4);
+  background: var(--ds-color-scrim);
+  backdrop-filter: blur(var(--ds-blur-modal));
+}
+
+.ds-modal {
+  width: min(512px, 100%);
+  max-height: min(85vh, 576px);
+  display: flex;
+  flex-direction: column;
+  background: var(--ds-color-surface-overlay);
+  border: 1px solid var(--ds-color-border-strong);
+  border-radius: var(--ds-radius-xl);
+  box-shadow: var(--ds-shadow-modal);
+}
+
+.ds-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ds-space-3);
+  padding: var(--ds-space-4) var(--ds-space-4);
+  border-bottom: 1px solid var(--ds-color-border-subtle);
+  flex-shrink: 0;
+}
+
+.ds-modal__title {
+  margin: 0;
+  font-family: var(--ds-font-family-sans);
+  font-size: var(--ds-font-size-xl);
+  font-weight: var(--ds-font-weight-semibold);
+  color: var(--ds-color-text-accent);
+  letter-spacing: var(--ds-letter-spacing-tight);
+}
+
+.ds-modal__body {
+  padding: var(--ds-space-4) 18px 18px;
+  overflow-y: auto;
+  font-family: var(--ds-font-family-sans);
+  font-size: var(--ds-font-size-md);
+  line-height: var(--ds-line-height-normal);
+  color: var(--ds-color-text-primary);
+}
+
+/* ——— Titres ——— */
+.ds-heading-section {
+  margin: 0 0 var(--ds-space-2);
+  font-family: var(--ds-font-family-sans);
+  font-size: var(--ds-font-size-lg);
+  font-weight: var(--ds-font-weight-semibold);
+  color: var(--ds-color-text-accent);
+  letter-spacing: var(--ds-letter-spacing-wide);
+  line-height: var(--ds-line-height-tight);
+}
+
+.ds-heading-block {
+  margin: 0 0 var(--ds-space-2);
+  font-family: var(--ds-font-family-sans);
+  font-size: var(--ds-font-size-sm);
+  font-weight: var(--ds-font-weight-semibold);
+  color: var(--ds-color-text-heading-muted);
+  letter-spacing: var(--ds-letter-spacing-tight);
+  line-height: var(--ds-line-height-normal);
+}
+
+/* ——— Typo utilitaire ——— */
+.ds-text-caption {
+  font-size: var(--ds-font-size-sm);
+  line-height: var(--ds-line-height-snug);
+  color: var(--ds-color-text-secondary);
+}
+
+.ds-text-overline {
+  font-size: var(--ds-font-size-sm);
+  font-weight: var(--ds-font-weight-semibold);
+  line-height: var(--ds-line-height-normal);
+  color: var(--ds-color-text-heading-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--ds-letter-spacing-wider);
+}
+
+.ds-text-danger {
+  color: var(--ds-color-text-danger);
+}

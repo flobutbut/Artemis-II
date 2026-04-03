@@ -1,0 +1,124 @@
+/**
+ * Design system — tokens (couleurs, typo, espacements, rayons, ombres, z-index, mouvement).
+ * Les alias historiques (--bg, --panel, --text, --muted, --accent) restent valides pour le code existant.
+ */
+
+:root {
+  /* ——— Primitives (palette espace / cyan) ——— */
+  --ds-palette-space-1000: #02060e;
+  --ds-palette-space-950: #03060c;
+  --ds-palette-space-900: #05080f;
+  --ds-palette-space-800: #0c1220;
+  --ds-palette-space-700: #121a2a;
+  --ds-palette-space-600: #1a2438;
+
+  --ds-palette-cyan-50: #e8ffff;
+  --ds-palette-cyan-100: #c5d8f0;
+  --ds-palette-cyan-200: #a8c4e8;
+  --ds-palette-cyan-300: #6bdcff;
+  --ds-palette-cyan-400: #6eb8ff;
+  --ds-palette-cyan-500: #4a9fe8;
+
+  --ds-palette-amber-400: #ff9f7a;
+
+  --ds-palette-white: #ffffff;
+  --ds-palette-black: #000000;
+
+  /* ——— Sémantique — surface ——— */
+  --ds-color-bg-app: var(--ds-palette-space-900);
+  --ds-color-bg-canvas: var(--ds-palette-space-900);
+  --ds-color-surface-base: rgba(12, 18, 32, 0.82);
+  --ds-color-surface-raised: rgba(12, 18, 32, 0.88);
+  --ds-color-surface-overlay: rgba(12, 18, 32, 0.97);
+  --ds-color-scrim: rgba(2, 6, 14, 0.72);
+  --ds-color-scrim-light: rgba(5, 8, 15, 0.55);
+
+  /* ——— Sémantique — bordure ——— */
+  --ds-color-border-subtle: rgba(110, 184, 255, 0.15);
+  --ds-color-border-default: rgba(110, 184, 255, 0.2);
+  --ds-color-border-strong: rgba(110, 184, 255, 0.28);
+  --ds-color-border-interactive: rgba(110, 184, 255, 0.35);
+  --ds-color-border-interactive-hover: rgba(110, 184, 255, 0.5);
+
+  /* ——— Sémantique — texte ——— */
+  --ds-color-text-primary: #e8eef8;
+  --ds-color-text-secondary: #8a9ab8;
+  --ds-color-text-tertiary: #6b7a99;
+  --ds-color-text-accent: var(--ds-palette-cyan-400);
+  --ds-color-text-code: var(--ds-palette-cyan-100);
+  --ds-color-text-heading-muted: var(--ds-palette-cyan-200);
+  --ds-color-text-danger: var(--ds-palette-amber-400);
+
+  /* ——— Sémantique — accent / état ——— */
+  --ds-color-accent: var(--ds-palette-cyan-400);
+  --ds-color-accent-subtle: rgba(110, 184, 255, 0.1);
+  --ds-color-accent-muted: rgba(110, 184, 255, 0.12);
+  --ds-color-accent-hover: rgba(110, 184, 255, 0.18);
+  --ds-color-accent-strong: rgba(110, 184, 255, 0.22);
+  --ds-color-focus-ring: var(--ds-palette-cyan-400);
+
+  /* ——— Typographie ——— */
+  --ds-font-family-sans: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --ds-font-family-mono: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, monospace;
+
+  --ds-font-size-2xs: 10px;
+  --ds-font-size-xs: 11px;
+  --ds-font-size-sm: 12px;
+  --ds-font-size-md: 12px;
+  --ds-font-size-base: 13px;
+  --ds-font-size-lg: 13px;
+  --ds-font-size-xl: 16px;
+  --ds-font-size-2xl: 18px;
+  --ds-font-size-icon: 22px;
+
+  --ds-font-weight-regular: 400;
+  --ds-font-weight-medium: 500;
+  --ds-font-weight-semibold: 600;
+
+  --ds-line-height-tight: 1.25;
+  --ds-line-height-snug: 1.35;
+  --ds-line-height-normal: 1.4;
+  --ds-line-height-relaxed: 1.45;
+
+  --ds-letter-spacing-tight: 0.5px;
+  --ds-letter-spacing-wide: 0.5px;
+  --ds-letter-spacing-wider: 1px;
+
+  /* ——— Espacements (échelle 4px, équivalent 1rem = 16px) ——— */
+  --ds-space-0: 0;
+  --ds-space-1: 4px;
+  --ds-space-2: 8px;
+  --ds-space-3: 12px;
+  --ds-space-4: 16px;
+  --ds-space-5: 20px;
+  --ds-space-6: 24px;
+  --ds-space-8: 32px;
+
+  /* ——— Rayons ——— */
+  --ds-radius-sm: 6px;
+  --ds-radius-md: 8px;
+  --ds-radius-lg: 10px;
+  --ds-radius-xl: 12px;
+
+  /* ——— Effets ——— */
+  --ds-blur-panel: 8px;
+  --ds-blur-glass: 10px;
+  --ds-blur-modal: 6px;
+
+  --ds-shadow-modal: 0 16px 48px rgba(0, 0, 0, 0.45);
+
+  /* ——— Z-index ——— */
+  --ds-z-modal: 10000;
+
+  /* ——— Mouvement ——— */
+  --ds-duration-fast: 120ms;
+  --ds-duration-normal: 200ms;
+  --ds-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+
+  /* ——— Alias historiques (composants / style.css) ——— */
+  --bg: var(--ds-color-bg-app);
+  --panel: var(--ds-color-surface-base);
+  --text: var(--ds-color-text-primary);
+  --muted: var(--ds-color-text-secondary);
+  --accent: var(--ds-color-accent);
+}
