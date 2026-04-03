@@ -2,7 +2,7 @@
   command = "npm run build"
   publish = "dist"
 
-# Proxy sans CORS vers l’API Horizons (même chemin que Vite en dev).
+# CORS-free proxy to Horizons API (same path as Vite in dev).
 [[redirects]]
   from = "/jpl-horizons"
   to = "https://ssd.jpl.nasa.gov/api/horizons.api"

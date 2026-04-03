@@ -1,10 +1,10 @@
 /**
- * Design system — tokens (couleurs, typo, espacements, rayons, ombres, z-index, mouvement).
- * Les alias historiques (--bg, --panel, --text, --muted, --accent) restent valides pour le code existant.
+ * Design system — tokens (colors, type, spacing, radii, shadows, z-index, motion).
+ * Legacy aliases (--bg, --panel, --text, --muted, --accent) remain valid for existing code.
  */
 
 :root {
-  /* ——— Primitives (palette espace / cyan) ——— */
+  /* ——— Primitives (space / cyan palette) ——— */
   --ds-palette-space-1000: #02060e;
   --ds-palette-space-950: #03060c;
   --ds-palette-space-900: #05080f;
@@ -24,7 +24,7 @@
   --ds-palette-white: #ffffff;
   --ds-palette-black: #000000;
 
-  /* ——— Sémantique — surface ——— */
+  /* ——— Semantic — surface ——— */
   --ds-color-bg-app: var(--ds-palette-space-900);
   --ds-color-bg-canvas: var(--ds-palette-space-900);
   --ds-color-surface-base: rgba(12, 18, 32, 0.82);
@@ -33,14 +33,14 @@
   --ds-color-scrim: rgba(2, 6, 14, 0.72);
   --ds-color-scrim-light: rgba(5, 8, 15, 0.55);
 
-  /* ——— Sémantique — bordure ——— */
+  /* ——— Semantic — border ——— */
   --ds-color-border-subtle: rgba(110, 184, 255, 0.15);
   --ds-color-border-default: rgba(110, 184, 255, 0.2);
   --ds-color-border-strong: rgba(110, 184, 255, 0.28);
   --ds-color-border-interactive: rgba(110, 184, 255, 0.35);
   --ds-color-border-interactive-hover: rgba(110, 184, 255, 0.5);
 
-  /* ——— Sémantique — texte ——— */
+  /* ——— Semantic — text ——— */
   --ds-color-text-primary: #e8eef8;
   --ds-color-text-secondary: #8a9ab8;
   --ds-color-text-tertiary: #6b7a99;
@@ -49,7 +49,7 @@
   --ds-color-text-heading-muted: var(--ds-palette-cyan-200);
   --ds-color-text-danger: var(--ds-palette-amber-400);
 
-  /* ——— Sémantique — accent / état ——— */
+  /* ——— Semantic — accent / state ——— */
   --ds-color-accent: var(--ds-palette-cyan-400);
   --ds-color-accent-subtle: rgba(110, 184, 255, 0.1);
   --ds-color-accent-muted: rgba(110, 184, 255, 0.12);
@@ -57,7 +57,7 @@
   --ds-color-accent-strong: rgba(110, 184, 255, 0.22);
   --ds-color-focus-ring: var(--ds-palette-cyan-400);
 
-  /* ——— Typographie ——— */
+  /* ——— Typography ——— */
   --ds-font-family-sans: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   --ds-font-family-mono: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, monospace;
 
@@ -84,7 +84,7 @@
   --ds-letter-spacing-wide: 0.5px;
   --ds-letter-spacing-wider: 1px;
 
-  /* ——— Espacements (échelle 4px, équivalent 1rem = 16px) ——— */
+  /* ——— Spacing (4px scale, 1rem = 16px equivalent) ——— */
   --ds-space-0: 0;
   --ds-space-1: 4px;
   --ds-space-2: 8px;
@@ -94,13 +94,13 @@
   --ds-space-6: 24px;
   --ds-space-8: 32px;
 
-  /* ——— Rayons ——— */
+  /* ——— Radii ——— */
   --ds-radius-sm: 6px;
   --ds-radius-md: 8px;
   --ds-radius-lg: 10px;
   --ds-radius-xl: 12px;
 
-  /* ——— Effets ——— */
+  /* ——— Effects ——— */
   --ds-blur-panel: 8px;
   --ds-blur-glass: 10px;
   --ds-blur-modal: 6px;
@@ -110,12 +110,12 @@
   /* ——— Z-index ——— */
   --ds-z-modal: 10000;
 
-  /* ——— Mouvement ——— */
+  /* ——— Motion ——— */
   --ds-duration-fast: 120ms;
   --ds-duration-normal: 200ms;
   --ds-ease-standard: cubic-bezier(0.2, 0, 0, 1);
 
-  /* ——— Alias historiques (composants / style.css) ——— */
+  /* ——— Legacy aliases (components / style.css) ——— */
   --bg: var(--ds-color-bg-app);
   --panel: var(--ds-color-surface-base);
   --text: var(--ds-color-text-primary);

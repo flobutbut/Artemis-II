@@ -23,24 +23,24 @@ const props = defineProps({
   },
 })
 
-/** Textures : exemples officiels three.js (licence MIT du dépôt). */
+/** Textures: official three.js examples (MIT license in the repo). */
 const TEX_EARTH = 'https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg'
 const TEX_MOON = 'https://threejs.org/examples/textures/planets/moon_1024.jpg'
 
-/** Physique (WGS84 / IAU) — Terre et trajectoire : même échelle que Horizons. Lune / Orion : taille d'affichage minimale pour les voir (positions inchangées). */
+/** Physics (WGS84 / IAU) — Earth and trajectory: same scale as Horizons. Moon / Orion: minimum display size (positions unchanged). */
 const EARTH_R_KM = 6371.01
 const MOON_R_KM = 1737.4
 const SCENE_PER_KM = 1 / 170000
 const BODY_RADIUS_MUL = 1
-/** Rayon Lune en scène : au moins ce minimum (la position reste celle de Horizons). */
-const MOON_DISPLAY_RADIUS_MIN = MOON_R_KM * SCENE_PER_KM * 2  // ×2 l'échelle réelle
+/** Moon radius in scene: at least this minimum (position still from Horizons). */
+const MOON_DISPLAY_RADIUS_MIN = MOON_R_KM * SCENE_PER_KM * 2  // ×2 real scale
 const canvasRef = ref(null)
 const loading = ref(true)
 const textureError = ref(null)
 const ephemError = ref(null)
 const ephemLoading = ref(true)
 const ephemUpdated = ref('—')
-const trajStatus = ref('Trajectoire : chargement…')
+const trajStatus = ref('Trajectory: loading…')
 const trajError = ref(null)
 
 const telemetry = shallowRef({
@@ -51,7 +51,7 @@ const telemetry = shallowRef({
 
 const orionRow = shallowRef(null)
 const moonRow = shallowRef(null)
-/** Échantillons Horizons avec `timeMs` pour lecture scrub (Orion = arc mission, Lune = orbite locale). */
+/** Horizons samples with `timeMs` for timeline scrub (Orion = mission arc, Moon = local orbit). */
 const orionTrajTimed = shallowRef(null)
 const moonOrbitTimed = shallowRef(null)
 
@@ -129,7 +129,7 @@ function createOrion() {
   solar.rotation.z = -0.15
   g.add(solar)
 
-  /* Repère visible (positions Horizons à l'échelle ; le maillage est volontairement exagéré). */
+  /* Visible marker (Horizons-scale positions; mesh deliberately enlarged). */
   g.scale.setScalar(0.014)
   return g
 }
@@ -172,10 +172,10 @@ function disposeTrajectory(root) {
 }
 
 /**
- * Tube le long de la trajectoire — segments droits entre échantillons Horizons (pas de Catmull-Rom :
- * avec un pas ~3 h, la Catmull-Rom surdéforme et fait des boucles hors de la trajectoire réelle).
+ * Trajectory line — straight segments between Horizons samples (no Catmull-Rom:
+ * with ~3 h steps, Catmull-Rom over-bends and forms loops off the real path).
+ * Legacy: per-segment tubes were avoided; a simple polyline is used.
  */
-/** Un seul TubeGeometry sur tout un CurvePath casse souvent (repères de Frenet aux jonctions) → un tube par segment. */
 const SPLINE_TUBE_RADIUS = 0.008
 const SPLINE_SEG_SUBDIV = 14
 
@@ -188,7 +188,7 @@ function buildTrajectoryGroup(rows) {
     )
   if (pts.length < 2) return null
 
-  // Ligne continue sur tous les points — simple, robuste, aucun problème de Frenet frame.
+  // Single polyline through all points — simple, robust, no Frenet-frame issues.
   const lineGeo = new THREE.BufferGeometry().setFromPoints(pts)
   const lineMat = new THREE.LineBasicMaterial({
     color: 0x4de8ff,
@@ -205,7 +205,7 @@ function buildTrajectoryGroup(rows) {
   g.frustumCulled = false
   g.add(line)
 
-  console.log('[Artemis] Trajectoire construite :', pts.length, 'points, premier:', pts[0], 'dernier:', pts[pts.length - 1])
+  console.log('[Artemis] Trajectory built:', pts.length, 'points, first:', pts[0], 'last:', pts[pts.length - 1])
   return g
 }
 
@@ -247,10 +247,10 @@ async function refreshInstantStates() {
     ephemError.value = null
     ephemUpdated.value = formatUtcTime(now)
 
-    // Centrer l'orbite caméra sur le milieu Terre–Lune, une seule fois au premier chargement
+    // Center camera orbit target on Earth–Moon midpoint once on first load
     if (!orbitTargetInitialized && controls) {
       const moonPos = rowToSceneVector(moon)
-      // Terre est toujours à l'origine (0,0,0) dans le repère Horizons géocentrique
+      // Earth stays at origin (0,0,0) in Horizons geocentric frame
       controls.target.set(moonPos.x / 2, moonPos.y / 2, moonPos.z / 2)
       controls.update()
       orbitTargetInitialized = true
@@ -258,14 +258,14 @@ async function refreshInstantStates() {
 
     applyTelemetryFromRows(moon, orion)
   } catch (e) {
-    console.error('[Artemis] État instantané Horizons — erreur :', e)
+    console.error('[Artemis] Horizons instant state — error:', e)
     ephemError.value = e instanceof Error ? e.message : String(e)
   } finally {
     ephemLoading.value = false
   }
 }
 
-/** Spline mission complète : décollage → fin d'éphéméride (Horizons). */
+/** Full mission arc: launch → end of Horizons ephemeris. */
 const MISSION_TRAJ_STEP = '1 h'
 
 function missionDateLabel(d) {
@@ -278,7 +278,7 @@ const missionSplineEndLabel = missionDateLabel(ARTEMIS_II_MISSION.trajectoryEndU
 const missionStep = MISSION_TRAJ_STEP
 
 async function loadMoonOrbit() {
-  // Un mois sidéral (~27.3 j) centré sur la mission, pas 6h → ~110 points
+  // ~27.3 d sidereal month centered on mission, 6 h step → ~110 points
   const start = new Date(ARTEMIS_II_MISSION.launchUtc.getTime() - 14 * 24 * 3600 * 1000)
   const end   = new Date(ARTEMIS_II_MISSION.launchUtc.getTime() + 14 * 24 * 3600 * 1000)
   try {
@@ -299,23 +299,23 @@ async function loadMoonOrbit() {
       opacity: 0.45,
     })
     const line = new THREE.Line(geo, mat)
-    line.computeLineDistances()   // requis pour LineDashedMaterial
+    line.computeLineDistances() // required for LineDashedMaterial
     line.frustumCulled = false
     line.renderOrder = 5
 
     moonOrbitRoot = line
     scene.add(moonOrbitRoot)
 
-    // Trainée initiale au temps réel
+    // Initial trail at real-time
     buildMoonTrail(Date.now())
   } catch (e) {
-    console.warn('[Artemis] Orbite lunaire :', e)
+    console.warn('[Artemis] Moon orbit:', e)
   }
 }
 
 /**
- * Reconstruit la trainée de la Lune centrée sur `nowMs`.
- * Appelé au chargement ET à chaque mise à jour de moonRow (live ou timeline scrub).
+ * Rebuilds the Moon trail centered on `nowMs`.
+ * Called on load and whenever moonRow updates (live or timeline scrub).
  */
 function buildMoonTrail(nowMs) {
   disposeTrajectory(moonTrailRoot)
@@ -326,7 +326,7 @@ function buildMoonTrail(nowMs) {
 
   const trailMs = 3 * 24 * 3600 * 1000
   const trailRows = timed.filter((r) => r.timeMs <= nowMs && r.timeMs >= nowMs - trailMs)
-  // Premier point futur pour que la tête de trainée colle à la position interpolée
+  // First future sample so the trail head meets the interpolated position
   const nextRow = timed.find((r) => r.timeMs > nowMs)
   if (nextRow) trailRows.push(nextRow)
   if (trailRows.length < 2) return
@@ -351,9 +351,9 @@ function buildMoonTrail(nowMs) {
   scene.add(moonTrailRoot)
 }
 
-// Resynchronise la trainée à chaque changement de moonRow :
-// — live : poll 90 s avec timeMs = Date.now()
-// — timeline scrub : interpolateTimedRows assigne row.timeMs au temps simulé
+// Resync trail whenever moonRow changes:
+// — live: 90 s poll with timeMs ≈ Date.now()
+// — timeline scrub: interpolateTimedRows sets row.timeMs to simulated time
 watch(moonRow, (row) => {
   if (!row) return
   buildMoonTrail(typeof row.timeMs === 'number' ? row.timeMs : Date.now())
@@ -361,7 +361,7 @@ watch(moonRow, (row) => {
 
 async function loadFullMissionTrajectory() {
   trajError.value = null
-  trajStatus.value = 'Trajectoire : chargement Horizons…'
+  trajStatus.value = 'Trajectory: loading Horizons…'
   try {
     const rows = await fetchTrajectoryArc(
       HORIZONS.ARTEMIS_II_ORION,
@@ -376,22 +376,22 @@ async function loadFullMissionTrajectory() {
     )
     const next = buildTrajectoryGroup(rows)
     if (!next) {
-      trajStatus.value = 'Trajectoire : pas assez de points'
-      trajError.value = 'Éphéméride reçue mais spline invalide (points insuffisants).'
+      trajStatus.value = 'Trajectory: not enough points'
+      trajError.value = 'Ephemeris received but path invalid (insufficient points).'
       return
     }
     if (scene) {
       disposeTrajectory(trajectoryRoot)
       trajectoryRoot = next
       scene.add(trajectoryRoot)
-      trajStatus.value = `Trajectoire : spline (${rows.length} échantillons Horizons)`
+      trajStatus.value = `Trajectory: polyline (${rows.length} Horizons samples)`
     }
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e)
-    console.error('[Artemis] Trajectoire Horizons — erreur complète :', e)
-    console.error('[Artemis] Message :', msg)
+    console.error('[Artemis] Horizons trajectory — full error:', e)
+    console.error('[Artemis] Message:', msg)
     trajError.value = msg
-    trajStatus.value = 'Trajectoire : échec (voir détail ci-dessous)'
+    trajStatus.value = 'Trajectory: failed (see detail below)'
   }
 }
 
@@ -434,7 +434,7 @@ function onResize() {
 }
 
 onMounted(async () => {
-  // nextTick attend le prochain cycle Vue, rAF attend que le navigateur ait terminé le layout
+  // nextTick: next Vue cycle; rAF: wait for browser layout
   await nextTick()
   await new Promise((r) => requestAnimationFrame(r))
 
@@ -451,7 +451,7 @@ onMounted(async () => {
 
   renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false })
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-  // false = ne pas écraser le style CSS du canvas (la taille affichée reste pilotée par le CSS)
+  // false = do not override canvas CSS (display size stays CSS-driven)
   renderer.setSize(w, h, false)
   renderer.toneMapping = THREE.ACESFilmicToneMapping
   renderer.toneMappingExposure = 1.05
@@ -470,8 +470,7 @@ onMounted(async () => {
 
   scene.add(createStarfield())
 
-  // Démarrer la boucle de rendu immédiatement — la scène affiche déjà les étoiles
-  // pendant que les textures et les éphémérides chargent en arrière-plan.
+  // Start render loop immediately — stars show while textures and ephemeris load in background.
   window.addEventListener('resize', onResize)
   animate()
 
@@ -512,7 +511,7 @@ onMounted(async () => {
     )
     scene.add(moonMesh)
   } catch (e) {
-    textureError.value = 'Textures : échec réseau (la scène utilise des couleurs de secours).'
+    textureError.value = 'Textures: network error (scene uses fallback solid colors).'
     console.error(e)
     earthMesh = new THREE.Mesh(
       new THREE.SphereGeometry(earthRadiusScene, 48, 48),
@@ -582,7 +581,7 @@ onUnmounted(() => {
 <template>
   <div class="wrap">
     <canvas ref="canvasRef" class="canvas" />
-    <div v-if="loading" class="overlay">Chargement des textures…</div>
+    <div v-if="loading" class="overlay">Loading textures…</div>
     <div v-else-if="textureError" class="overlay soft">{{ textureError }}</div>
     <TuileInfos
       :telemetry="telemetry"

@@ -1,30 +1,30 @@
-# Documentation technique
+# Technical documentation
 
 ## Stack
 
 - **Vue** 3 (Composition API, `<script setup>`)
 - **Vite** 6
-- **three** r170 — scène WebGL, `OrbitControls`
-- **Design system** : `src/styles/tokens.css` + `src/styles/ui.css` (voir `Documentation-design-system.md`)
+- **three** r170 — WebGL scene, `OrbitControls`
+- **Design system**: `src/styles/tokens.css` + `src/styles/ui.css` (see `Documentation-design-system.md`)
 
 ## Structure
 
-- `src/App.vue` — layout colonne + zone scène + état `timelineLive` / `timelineAt` partagé avec la scène et `MissionTimeline.vue`
-- `src/components/MissionTimeline.vue` — curseur temps mission (OEM), `v-model:live` + `v-model:at`, bouton Live (`SourcesButton` ghost)
-- `src/components/AppHeader.vue` — insigne mission, titre, bouton « Sources » (`SourcesButton.vue`)
-- `public/artemis-ii-patch.svg` — patch Artemis II (copie du fichier « Artemis II patch » sur [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Artemis_II_patch.svg), œuvre NASA / domaine public)
-- `src/components/SourcesModal.vue` — modale (Teleport) listant éphémérides, liens NASA/three.js, usage médias
-- `src/components/AppFooter.vue` — crédits textures, AROW, API Horizons
-- `src/components/TuileInfos.vue` — tuile HUD (télémétrie, trajectoire, aide)
-- `src/lib/horizons.js` — client Horizons (parse SOE, dates UTC, conversion écliptique J2000 → Three.js) ; `withUniformSampleTimes` / `interpolateTimedRows` pour le scrub timeline
-- `src/components/ArtemisScene.vue` — canvas Three.js, données temps réel, trajectoire par segments
-- Proxy `/jpl-horizons` : `vite.config.js` (dev + preview) et `netlify.toml` (prod) vers `https://ssd.jpl.nasa.gov/api/horizons.api` (pas de CORS côté JPL)
-- Textures : chargement distant depuis `threejs.org` (exemples three.js, MIT), `TextureLoader` + `crossOrigin: anonymous`
+- `src/App.vue` — column layout + scene area + shared `timelineLive` / `timelineAt` with the scene and `MissionTimeline.vue`
+- `src/components/MissionTimeline.vue` — mission time cursor (OEM), `v-model:live` + `v-model:at`, Live button (`SourcesButton` ghost)
+- `src/components/AppHeader.vue` — mission patch, title, “Sources” button (`SourcesButton.vue`)
+- `public/artemis-ii-patch.svg` — Artemis II patch (copy of “Artemis II patch” on [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Artemis_II_patch.svg), NASA work / public domain)
+- `src/components/SourcesModal.vue` — modal (Teleport) listing ephemerides, NASA/three.js links, media usage
+- `src/components/AppFooter.vue` — texture credits, AROW, Horizons API
+- `src/components/TuileInfos.vue` — HUD tile (telemetry, trajectory, help)
+- `src/lib/horizons.js` — Horizons client (SOE parse, UTC dates, ecliptic J2000 → Three.js); `withUniformSampleTimes` / `interpolateTimedRows` for timeline scrub
+- `src/components/ArtemisScene.vue` — Three.js canvas, live data, segment polyline trajectory
+- Proxy `/jpl-horizons`: `vite.config.js` (dev + preview) and `netlify.toml` (prod) → `https://ssd.jpl.nasa.gov/api/horizons.api` (no open CORS from JPL)
+- Textures: remote load from `threejs.org` (three.js examples, MIT), `TextureLoader` + `crossOrigin: anonymous`
 
-## Échelle
+## Scale
 
-Distances et vitesses affichées dans le HUD sont **dérivées** de la position 3D avec un facteur d’échelle arbitraire vers des ordres de grandeur « km » — **à titre démonstratif** uniquement.
+Distances and speeds shown in the HUD are **derived** from 3D position with an arbitrary scale factor toward “km” orders of magnitude — **demonstration only**.
 
-## Déploiement
+## Deployment
 
-`npm run build` produit le dossier `dist/` (statique, hébergeable sur Netlify, GitHub Pages, etc.).
+`npm run build` outputs the `dist/` folder (static, suitable for Netlify, GitHub Pages, etc.).

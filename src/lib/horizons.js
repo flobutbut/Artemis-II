@@ -1,7 +1,7 @@
 /**
  * NASA/JPL Horizons On-Line Ephemeris (https://ssd.jpl.nasa.gov/)
- * — Vecteurs géométriques, repère écliptique J2000, centre Terre (BODY CENTER, code 500).
- * Les requêtes passent par /jpl-horizons (proxy Vite / Netlify) car l'API ne renvoie pas CORS.
+ * Geometric vectors, ecliptic J2000 frame, Earth center (BODY CENTER, code 500).
+ * Requests go through /jpl-horizons (Vite / Netlify proxy) because the API is not CORS-open.
  */
 
 export const HORIZONS = {
@@ -11,9 +11,9 @@ export const HORIZONS = {
 }
 
 /**
- * Artemis II (Horizons −1024) : décollage nominal NASA vs fenêtre réellement couverte par l'OEM.
- * Les segments JSC ne commencent qu'après séparation ICPS (~3h24 après le lancement) et se terminent
- * au dernier fichier OEM listé dans la fiche Horizons (~10 avr. 2026 UTC).
+ * Artemis II (Horizons −1024): nominal NASA launch vs OEM window actually covered.
+ * JSC segments start after ICPS separation (~3h24 after launch) and end at the last OEM file
+ * listed on the Horizons target page (~10 Apr 2026 UTC).
  */
 export const ARTEMIS_II_MISSION = {
   launchUtc: new Date('2026-04-01T22:35:12.000Z'),
@@ -53,7 +53,7 @@ function toHorizonsCalendarUtc(date) {
 }
 
 /**
- * Ecliptic J2000 (km) → Three.js (Y haut), même convention pour tous les corps.
+ * Ecliptic J2000 (km) → Three.js (Y up); same convention for all bodies.
  */
 export function eclipticKmToThree(x, y, z, scale) {
   return { x: x * scale, y: z * scale, z: -y * scale }
@@ -64,7 +64,7 @@ export function parseHorizonsVectorBlock(resultText) {
   const end = resultText.indexOf('$$EOE')
   if (start < 0 || end < 0) {
     const err = resultText.match(/No ephemeris|error|ERROR[^\n]*/i)
-    throw new Error(err ? err[0].slice(0, 200) : 'Bloc SOE introuvable (Horizons)')
+    throw new Error(err ? err[0].slice(0, 200) : 'SOE block not found (Horizons)')
   }
   const block = resultText.slice(start + 5, end)
   const lines = block.split(/\r?\n/).map((l) => l.trim())
@@ -97,7 +97,7 @@ export function parseHorizonsVectorBlock(resultText) {
     })
     i += 3
   }
-  if (!rows.length) throw new Error('Aucun état parsé dans SOE')
+  if (!rows.length) throw new Error('No state vectors parsed in SOE block')
   return rows
 }
 
@@ -123,7 +123,7 @@ export async function fetchHorizonsVectors({
   })
   const url = `${horizonsUrl()}?${params.toString()}`
 
-  // Retry automatique sur 503 (Horizons surchargé) : 3 tentatives, délai croissant
+  // Retry on 503 (Horizons busy): 3 attempts, increasing delay
   let lastErr
   for (let attempt = 0; attempt < 3; attempt++) {
     if (attempt > 0) await sleep(1500 * attempt)
@@ -142,15 +142,15 @@ export async function fetchHorizonsVectors({
     const data = await res.json()
     if (data?.error) throw new Error(String(data.error).replace(/;/g, '\n').slice(0, 400))
     const text = data?.result
-    if (typeof text !== 'string') throw new Error('Réponse JSON Horizons invalide')
+    if (typeof text !== 'string') throw new Error('Invalid Horizons JSON response')
     return parseHorizonsVectorBlock(text)
   }
-  throw lastErr ?? new Error('Horizons indisponible (3 tentatives)')
+  throw lastErr ?? new Error('Horizons unavailable (3 attempts)')
 }
 
-/** Dernier état à l'instant demandé (fenêtre élargie pour absorber les gaps OEM). */
+/** Latest state near the requested instant (wider window to absorb OEM gaps). */
 export async function fetchLatestState(command, when = new Date()) {
-  // Fenêtre de 30 min centrée sur "now" : couvre les gaps entre époques OEM
+  // 30 min window centered on "now" to bridge gaps between OEM epochs
   const startDate = new Date(when.getTime() - 15 * 60 * 1000)
   const endDate = new Date(when.getTime() + 15 * 60 * 1000)
   const start = toHorizonsCalendarUtc(startDate)
@@ -161,12 +161,13 @@ export async function fetchLatestState(command, when = new Date()) {
     stopTime: stop,
     stepSize: '5 min',
   })
-  if (!rows.length) throw new Error(`Aucun état disponible dans Horizons pour ${command} autour de ${when.toISOString()}`)
-  // La dernière ligne est la plus proche de "now" (fenêtre centrée)
+  if (!rows.length)
+    throw new Error(`No Horizons state for ${command} around ${when.toISOString()}`)
+  // Last row is closest to "now" (centered window)
   return rows[rows.length - 1]
 }
 
-/** Arc de trajectoire pour spline (une seule requête). */
+/** Trajectory arc in one request. */
 export async function fetchTrajectoryArc(command, startDate, stopDate, stepSize = '6 h') {
   return fetchHorizonsVectors({
     command,
@@ -189,8 +190,8 @@ export function speedKmS(row) {
 }
 
 /**
- * Attache un `timeMs` à chaque ligne d’éphéméride, répartition uniforme entre deux bornes
- * (cohérent avec un pas fixe Horizons sur la fenêtre demandée).
+ * Attach a `timeMs` to each ephemeris row, uniform spacing between start and end
+ * (matches fixed Horizons step over the requested window).
  */
 export function withUniformSampleTimes(rows, startDate, endDate) {
   const n = rows.length
@@ -203,7 +204,7 @@ export function withUniformSampleTimes(rows, startDate, endDate) {
   }))
 }
 
-/** Interpolation linéaire position / vitesse entre deux échantillons Horizons. */
+/** Linear interpolation of position / velocity between two Horizons samples. */
 export function interpolateTimedRows(rows, timeMs) {
   if (!rows?.length) return null
   const t0 = rows[0].timeMs

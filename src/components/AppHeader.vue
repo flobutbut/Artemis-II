@@ -15,7 +15,7 @@ const showSources = ref(false)
           src="/artemis-ii-patch.svg"
           width="32"
           height="33"
-          alt="Insigne de la mission Artemis II (NASA)"
+          alt="Artemis II mission insignia (NASA)"
           decoding="async"
         />
         <div class="titles">

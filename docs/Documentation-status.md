@@ -1,13 +1,13 @@
-# État du projet
+# Project status
 
-| Élément            | Statut                          |
-| ------------------ | ------------------------------- |
-| Scène 3D Terre/Lune | OK (textures three.js)         |
-| Maillage Orion     | Stylisé procédural              |
-| Données mission    | JPL Horizons (-1024, 301), polling ~90 s + arc traj. |
-| Tuile latérale     | Texte source Horizons + mesures / actu / traj. / aide scène (header allégé). |
-| Header             | Patch Artemis II (`public/artemis-ii-patch.svg`) + `SourcesButton.vue`. |
-| Timeline           | `MissionTimeline.vue` au-dessus du footer ; live vs scrub + interpolation caches. |
-| Build Vite         | À valider en CI / machine locale |
+| Item              | Status |
+| ----------------- | ------ |
+| Earth/Moon 3D scene | OK (three.js textures) |
+| Orion mesh        | Stylized procedural |
+| Mission data      | JPL Horizons (-1024, 301), ~90 s polling + trajectory arc |
+| Side tile         | Horizons source text + measurements / refresh / traj. / scene help (light header) |
+| Header            | Artemis II patch (`public/artemis-ii-patch.svg`) + `SourcesButton.vue` |
+| Timeline          | `MissionTimeline.vue` above footer; live vs scrub + cached interpolation |
+| Vite build        | Validate in CI / locally |
 
-Dernière mise à jour : avril 2026.
+Last updated: April 2026.

@@ -143,7 +143,7 @@ function onKeydown(e) {
 </script>
 
 <template>
-  <div class="mission-timeline" role="group" aria-label="Chronologie de la mission (éphéméride OEM)">
+  <div class="mission-timeline" role="group" aria-label="Mission timeline (OEM ephemeris window)">
     <div
       ref="trackRef"
       class="mission-timeline__track"
@@ -164,7 +164,7 @@ function onKeydown(e) {
         :aria-valuemax="sliderMax"
         :aria-valuenow="sliderValue"
         :aria-valuetext="labelText"
-        :aria-label="live ? 'Temps mission (direct)' : 'Temps mission (lecture)'"
+        :aria-label="live ? 'Mission time (live)' : 'Mission time (scrub)'"
         tabindex="0"
         @pointerdown="onThumbPointerDown"
         @keydown="onKeydown"

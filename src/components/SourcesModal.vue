@@ -39,57 +39,57 @@ onUnmounted(() => {
 
 const sources = [
   {
-    title: 'Éphémérides mission (positions, vitesses, trajectoire)',
+    title: 'Mission ephemerides (positions, speeds, trajectory)',
     items: [
       {
         label: 'NASA / JPL Horizons On-Line Ephemeris System',
         href: 'https://ssd.jpl.nasa.gov/horizons/',
-        note: 'Vecteurs géométriques, repère écliptique J2000, centre Terre (code 500).',
+        note: 'Geometric vectors, ecliptic J2000 frame, Earth center (code 500).',
       },
       {
-        label: 'API Horizons (requêtes JSON)',
+        label: 'Horizons API (JSON requests)',
         href: 'https://ssd.jpl.nasa.gov/api/horizons.api',
-        note: 'Appelée via le proxy local /jpl-horizons (dev, preview, Netlify).',
+        note: 'Called via local proxy /jpl-horizons (dev, preview, Netlify).',
       },
       {
-        label: 'Fiche cible Artemis II · Orion (Horizons ID −1024)',
+        label: 'Artemis II · Orion target page (Horizons ID −1024)',
         href: 'https://ssd.jpl.nasa.gov/horizons/app.html#/?sstr=-1024',
-        note: 'Métadonnées mission et plage OEM.',
+        note: 'Mission metadata and OEM span.',
       },
     ],
   },
   {
-    title: 'Suivi public NASA',
+    title: 'NASA public tracking',
     items: [
       {
         label: 'AROW — Artemis Real-time Orbit Website',
         href: 'https://www.nasa.gov/trackartemis',
-        note: 'Suivi officiel interactif.',
+        note: 'Official interactive tracking.',
       },
     ],
   },
   {
-    title: 'Rendu 3D',
+    title: '3D rendering',
     items: [
       {
-        label: 'three.js (bibliothèque WebGL)',
+        label: 'three.js (WebGL library)',
         href: 'https://threejs.org/',
-        note: 'Licence MIT.',
+        note: 'MIT license.',
       },
       {
-        label: 'Textures Terre / Lune (exemples three.js)',
+        label: 'Earth / Moon textures (three.js examples)',
         href: 'https://github.com/mrdoob/three.js/tree/dev/examples/textures/planets',
-        note: 'Fichiers d’exemple du dépôt three.js (MIT).',
+        note: 'Sample files from the three.js repository (MIT).',
       },
     ],
   },
   {
-    title: 'Images & médias NASA',
+    title: 'NASA images & media',
     items: [
       {
         label: 'NASA — Images and Media Usage Guidelines',
         href: 'https://www.nasa.gov/nasa-brand-center/images-and-media/',
-        note: 'Pour toute réutilisation de contenus NASA.',
+        note: 'For any reuse of NASA content.',
       },
     ],
   },
@@ -111,15 +111,15 @@ const sources = [
         aria-labelledby="sources-modal-title"
       >
         <header class="ds-modal__header">
-          <h2 id="sources-modal-title" class="ds-modal__title">Sources de l’application</h2>
-          <button type="button" class="ds-btn ds-btn--icon ds-focusable" aria-label="Fermer" @click="close">
+          <h2 id="sources-modal-title" class="ds-modal__title">Application sources</h2>
+          <button type="button" class="ds-btn ds-btn--icon ds-focusable" aria-label="Close" @click="close">
             ×
           </button>
         </header>
         <div class="ds-modal__body">
           <p class="modal-lead">
-            Données de trajectoire et télémétrie affichées : <strong>JPL Horizons</strong>. Cette interface est
-            indépendante de la NASA et ne constitue pas un produit officiel.
+            Trajectory and telemetry shown here come from <strong>JPL Horizons</strong>. This interface is independent of
+            NASA and is not an official NASA product.
           </p>
           <section v-for="(block, i) in sources" :key="i" class="modal-block">
             <h3 class="ds-heading-block">{{ block.title }}</h3>

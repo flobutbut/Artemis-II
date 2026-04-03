@@ -1,45 +1,46 @@
-# Artemis II — vue Terre · Lune · Orion
+# Artemis II — Earth · Moon · Orion view
 
-Application **Vue 3** + **Vite** + **Three.js** : positions **Orion (Artemis II)** et **Lune** via l’**API JPL Horizons** (NASA/JPL), modèle 3D stylisé d’Orion.
+**Vue 3** + **Vite** + **Three.js** app: **Orion (Artemis II)** and **Moon** positions via the **JPL Horizons API** (NASA/JPL), with a stylized 3D Orion model.
 
-## Prérequis
+## Requirements
 
 - **Node.js** 18+
-- **npm** ou **Yarn**
+- **npm** or **Yarn**
 
-## Commandes
+## Commands
 
 ```bash
 npm install
 npm run dev
 ```
 
-Build production :
+Production build:
 
 ```bash
 npm run build
 npm run preview
 ```
 
-## Éphémérides
+## Ephemerides
 
-- Source : [Horizons On-Line Ephemeris System](https://ssd.jpl.nasa.gov/horizons/) (API `horizons.api`).
-- Cible Orion / Artemis II : **`-1024`** ; Lune : **`301`** ; centre : **Terre (code `500`, corps)**.
-- En **développement** et **`vite preview`**, les requêtes passent par le **proxy** défini dans `vite.config.js` (`/jpl-horizons` → `ssd.jpl.nasa.gov`).
-- Déploiement **Netlify** : voir `netlify.toml` (même chemin). Autre hébergeur : prévoir un proxy équivalent (l’API JPL ne renvoie pas d’en-têtes CORS ouverts).
+- Source: [Horizons On-Line Ephemeris System](https://ssd.jpl.nasa.gov/horizons/) (`horizons.api` API).
+- Orion / Artemis II target: **`-1024`**; Moon: **`301`**; center: **Earth (body code `500`)**.
+- In **development** and **`vite preview`**, requests go through the **proxy** in `vite.config.js` (`/jpl-horizons` → `ssd.jpl.nasa.gov`).
+- **Netlify** deployment: see `netlify.toml` (same path). Other hosts: provide an equivalent proxy (the JPL API does not send permissive CORS headers).
 
-## Visuels et droits
+## Visuals and rights
 
-- **Textures Terre / Lune** : fichiers d’exemple du projet [three.js](https://github.com/mrdoob/three.js) (`examples/textures/planets/`), chargés depuis `threejs.org` — licence **MIT** (voir le dépôt three.js).
-- **Orion** : géométrie procédurale dans le code (pas de maillage NASA embarqué).
-- **Étoiles** : points générés en code.
+- **Earth / Moon textures**: sample files from the [three.js](https://github.com/mrdoob/three.js) project (`examples/textures/planets/`), loaded from `threejs.org` — **MIT** license (see the three.js repo).
+- **Orion**: procedural geometry in code (no embedded NASA mesh).
+- **Stars**: procedurally generated points.
 
-Suivi mission réel : [NASA AROW — trackartemis](https://www.nasa.gov/trackartemis).
+Live mission tracking: [NASA AROW — trackartemis](https://www.nasa.gov/trackartemis).
 
-## Documentation projet
+## Project documentation
 
-Voir le dossier `docs/` :
+See the `docs/` folder:
 
 - `Documentation-technique.md`
 - `Documentation-fonctionnelle.md`
 - `Documentation-status.md`
+- `Documentation-design-system.md`

@@ -20,9 +20,9 @@ defineProps({
 <template>
   <aside class="tuile ds-panel ds-panel--glass" aria-live="polite">
     <header class="tuile__intro">
-      <h2 class="ds-heading-section">Données JPL Horizons</h2>
+      <h2 class="ds-heading-section">JPL Horizons data</h2>
       <p class="tuile__lead">
-        Positions, vitesses et trajectoire : éphémérides
+        Positions, speeds, and trajectory: ephemeris from
         <a
           class="ds-link"
           href="https://ssd.jpl.nasa.gov/horizons/"
@@ -33,34 +33,34 @@ defineProps({
         </a>.
       </p>
       <p class="tuile__ids ds-text-caption">
-        Cibles : Artemis II · Orion <code class="tuile__code">-1024</code>, Lune <code class="tuile__code">301</code> ·
-        référence <strong>centre Terre</strong> · repère écliptique J2000 (DE441).
+        Targets: Artemis II · Orion <code class="tuile__code">-1024</code>, Moon <code class="tuile__code">301</code> ·
+        reference <strong>Earth center</strong> · ecliptic J2000 frame (DE441).
       </p>
     </header>
 
     <section class="tuile__section" aria-labelledby="tuile-mesures">
-      <h3 id="tuile-mesures" class="ds-heading-block">Mesures instantanées</h3>
+      <h3 id="tuile-mesures" class="ds-heading-block">Instantaneous measurements</h3>
       <dl class="tuile__dl">
-        <dt>Distance centre Terre</dt>
+        <dt>Distance to Earth center</dt>
         <dd>{{ telemetry.distEarth }}</dd>
-        <dt>Distance centre Lune</dt>
+        <dt>Distance to Moon center</dt>
         <dd>{{ telemetry.distMoon }}</dd>
-        <dt>Vitesse (état vectoriel)</dt>
+        <dt>Speed (state vector)</dt>
         <dd>{{ telemetry.speed }}</dd>
       </dl>
     </section>
 
     <section class="tuile__section" aria-labelledby="tuile-actu">
-      <h3 id="tuile-actu" class="ds-heading-block">Actualisation</h3>
+      <h3 id="tuile-actu" class="ds-heading-block">Refresh</h3>
       <p class="tuile__status ds-text-caption">
-        <span v-if="ephemLoading">Éphéméride en cours…</span>
+        <span v-if="ephemLoading">Loading ephemeris…</span>
         <span v-else-if="ephemError" class="ds-text-danger">{{ ephemError }}</span>
-        <span v-else>Dernière mise à jour : {{ ephemUpdated }}</span>
+        <span v-else>Last update: {{ ephemUpdated }}</span>
       </p>
     </section>
 
     <section class="tuile__section" aria-labelledby="tuile-traj">
-      <h3 id="tuile-traj" class="ds-heading-block">Trajectoire affichée</h3>
+      <h3 id="tuile-traj" class="ds-heading-block">Displayed trajectory</h3>
       <p class="tuile__traj ds-text-caption" :class="{ 'ds-text-danger': !!trajError }">
         {{ trajStatus }}
       </p>
@@ -68,27 +68,27 @@ defineProps({
     </section>
 
     <section class="tuile__section" aria-labelledby="tuile-scene">
-      <h3 id="tuile-scene" class="ds-heading-block">Lecture de la scène 3D</h3>
+      <h3 id="tuile-scene" class="ds-heading-block">Reading the 3D scene</h3>
       <ul class="tuile__list ds-text-caption">
         <li>
-          <strong>Échelle</strong> : Terre et trajectoire à l’échelle des positions Horizons. Lune : rayon d’affichage ≥
-          {{ moonDisplayRadiusMin }} (unités scène), le centre reste la position Horizons.
+          <strong>Scale</strong>: Earth and trajectory match Horizons positions. Moon: display radius ≥
+          {{ moonDisplayRadiusMin }} (scene units); center stays at the Horizons position.
         </li>
         <li>
-          <strong>Orion</strong> : maillage agrandi pour le repérer ; position d’après Horizons.
+          <strong>Orion</strong>: enlarged mesh for visibility; position from Horizons.
         </li>
         <li>
-          <strong>Courbe</strong> : segments droits entre échantillons (pas de lissage Catmull-Rom).
+          <strong>Path</strong>: straight segments between samples (no Catmull-Rom smoothing).
         </li>
         <li>
-          <strong>Fenêtre OEM</strong> (Horizons) : {{ missionSplineStartLabel }} → {{ missionSplineEndLabel }} — pas
-          d’échantillonnage {{ missionStep }} sur cette série.
+          <strong>OEM window</strong> (Horizons): {{ missionSplineStartLabel }} → {{ missionSplineEndLabel }} — no
+          {{ missionStep }} sampling on this arc.
         </li>
         <li>
-          <strong>Décollage de référence</strong> : {{ missionLaunchLabel }}. Les ~3 h 24 avant séparation ICPS ne sont pas
-          couvertes par cette extraction Horizons.
+          <strong>Reference launch</strong>: {{ missionLaunchLabel }}. The ~3 h 24 before ICPS separation are not covered
+          by this Horizons extract.
         </li>
-        <li><strong>Caméra</strong> : glisser (clic maintenu) pour orbiter.</li>
+        <li><strong>Camera</strong>: drag (click and hold) to orbit.</li>
       </ul>
     </section>
   </aside>

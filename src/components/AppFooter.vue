@@ -1,18 +1,18 @@
 <template>
   <footer class="footer">
     <p class="footer__line">
-      Textures Terre / Lune :
+      Earth / Moon textures:
       <a
         class="ds-link"
         href="https://github.com/mrdoob/three.js/tree/dev/examples/textures/planets"
         target="_blank"
         rel="noopener noreferrer"
       >
-        dépôt three.js (MIT)
+        three.js repo (MIT)
       </a>
-      · Suivi interactif NASA :
+      · NASA interactive tracking:
       <a class="ds-link" href="https://www.nasa.gov/trackartemis" target="_blank" rel="noopener noreferrer">AROW</a>
-      · Données :
+      · Data:
       <a class="ds-link" href="https://ssd.jpl.nasa.gov/api/horizons.api" target="_blank" rel="noopener noreferrer">
         Horizons API
       </a>

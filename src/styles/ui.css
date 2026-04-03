@@ -1,9 +1,9 @@
 /**
- * Design system — patterns UI réutilisables (boutons, liens, panneaux, modale, typo utilitaire).
- * Ne s’applique pas au canvas WebGL ; uniquement aux éléments HTML marqués par ces classes.
+ * Design system — reusable UI patterns (buttons, links, panels, modal, utility type).
+ * Does not apply to the WebGL canvas; only HTML elements using these classes.
  */
 
-/* ——— Focus clavier ——— */
+/* ——— Keyboard focus ——— */
 .ds-focusable:focus {
   outline: none;
 }
@@ -13,7 +13,7 @@
   outline-offset: 2px;
 }
 
-/* ——— Boutons ——— */
+/* ——— Buttons ——— */
 .ds-btn {
   display: inline-flex;
   align-items: center;
@@ -38,7 +38,7 @@
   cursor: not-allowed;
 }
 
-/* Secondaire : bordure accent, fond discret (ex. Sources) */
+/* Secondary: accent border, subtle fill (e.g. Sources) */
 .ds-btn--secondary {
   border: 1px solid var(--ds-color-border-interactive);
   background: var(--ds-color-accent-subtle);
@@ -50,7 +50,7 @@
   border-color: var(--ds-color-border-interactive-hover);
 }
 
-/* Fantôme : peu de fond */
+/* Ghost: minimal fill */
 .ds-btn--ghost {
   border: 1px solid transparent;
   background: transparent;
@@ -62,7 +62,7 @@
   border-color: var(--ds-color-border-default);
 }
 
-/* Icône seule (ex. fermer modale) */
+/* Icon-only (e.g. close modal) */
 .ds-btn--icon {
   width: 32px;
   height: 32px;
@@ -84,7 +84,7 @@
   outline-offset: 2px;
 }
 
-/* ——— Liens ——— */
+/* ——— Links ——— */
 .ds-link {
   color: var(--ds-color-text-accent);
   text-decoration: none;
@@ -98,7 +98,7 @@
   text-underline-offset: 2px;
 }
 
-/* ——— Panneaux chrome ——— */
+/* ——— Chrome panels ——— */
 .ds-panel {
   background: var(--ds-color-surface-base);
   border: 1px solid var(--ds-color-border-subtle);
@@ -106,21 +106,21 @@
   backdrop-filter: blur(var(--ds-blur-panel));
 }
 
-/* Tuile flottante / HUD */
+/* Floating tile / HUD */
 .ds-panel--glass {
   background: var(--ds-color-surface-raised);
   border-color: var(--ds-color-border-default);
   backdrop-filter: blur(var(--ds-blur-glass));
 }
 
-/* Barre app (header / footer) */
+/* App bar (header / footer) */
 .ds-panel--bar {
   background: var(--ds-color-surface-base);
   border-color: var(--ds-color-border-subtle);
   backdrop-filter: blur(var(--ds-blur-panel));
 }
 
-/* ——— Modale ——— */
+/* ——— Modal ——— */
 .ds-modal-backdrop {
   position: fixed;
   inset: 0;
@@ -172,7 +172,7 @@
   color: var(--ds-color-text-primary);
 }
 
-/* ——— Titres ——— */
+/* ——— Headings ——— */
 .ds-heading-section {
   margin: 0 0 var(--ds-space-2);
   font-family: var(--ds-font-family-sans);
@@ -193,7 +193,7 @@
   line-height: var(--ds-line-height-normal);
 }
 
-/* ——— Typo utilitaire ——— */
+/* ——— Utility type ——— */
 .ds-text-caption {
   font-size: var(--ds-font-size-sm);
   line-height: var(--ds-line-height-snug);
