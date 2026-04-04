@@ -29,7 +29,7 @@ WebGL rendering (Three.js scene) does not use these tokens; they apply to **HTML
 ## Components (classes)
 
 - **Buttons**: `.ds-btn` + `.ds-btn--secondary` | `--ghost` | `--icon`; `.ds-focusable` for focus ring
-- **`SourcesButton.vue`**: `variant` prop = `primary` | `secondary` | `ghost` (default `secondary`); header uses `ghost` for “Sources”
+- **`SourcesButton.vue`**: `variant` prop = `primary` | `secondary` | `ghost` (default `secondary`); footer uses `ghost` for “Sources”
 - **`LiveModeButton.vue`**: timeline control; prop `live` — generic `--ds-color-red-*` when on, `--ds-color-neutral-*` when idle; uppercase “LIVE” with leading dot
 - **`DsTabs.vue`**: `v-model` string id + `tabs: { id, label }[]`; **ghost** : `ds-tabs__ghost-fill` + `ds-tabs__ghost-stack` (label + `ds-tabs__ghost-line`) ; trait actif en `absolute` (`bottom: -var(--ds-space-6)`) = bas du bouton, largeur du texte ; padding tab conservé ; prop `variant`: `default` | `ghost`
 - **Links**: `.ds-link`
@@ -37,6 +37,10 @@ WebGL rendering (Three.js scene) does not use these tokens; they apply to **HTML
 - **Modal**: `.ds-modal-backdrop`, `.ds-modal`, `.ds-modal__header`, `.ds-modal__title`, `.ds-modal__body`
 - **Headings**: `.ds-heading-section`, `.ds-heading-block`
 - **Text**: `.ds-text-caption`, `.ds-text-overline`, `.ds-text-danger`
+
+## Responsive (chrome)
+
+Les breakpoints du layout **header / timeline / footer** sont définis en **CSS scoped** dans les composants concernés (`AppHeader.vue`, `MissionTimeline.vue`, `AppFooter.vue`), avec **`@media (max-width: 600px)`** et **`380px`** pour la timeline uniquement. Préférer les tokens `--ds-space-*` et `--ds-font-size-*` lorsque la valeur existe déjà dans `tokens.css`.
 
 ## Evolution
 

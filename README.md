@@ -7,6 +7,10 @@
 - **Node.js** 18+
 - **npm** or **Yarn**
 
+## Environment (optional)
+
+- Copy **`.env.example`** to **`.env`** and set **`GITHUB_TOKEN`** if a tool or script needs a [GitHub personal access token](https://github.com/settings/tokens) (e.g. `gh` CLI). Do **not** use a `VITE_` prefix for secrets: they would be embedded in the client bundle.
+
 ## Commands
 
 ```bash

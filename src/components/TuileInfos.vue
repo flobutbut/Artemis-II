@@ -1,10 +1,13 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed, onMounted, onUnmounted } from 'vue'
 import DsTabs from './DsTabs.vue'
 import {
   fetchMissionsBlogArtemis2Items,
   NASA_MISSIONS_BLOG_RSS_URL,
 } from '../lib/nasa-missions-blog-feed.js'
+
+/** Aligné sur le header responsive (`AppHeader.vue`). */
+const MQ_COMPACT = '(max-width: 600px)'
 
 /** NASA live stream (YouTube); embed when “NASA Live” tab is selected. */
 const NASA_LIVE_YOUTUBE_ID = '6RwfNBtepa4'
@@ -24,6 +27,48 @@ const feedError = ref(null)
 let feedLoaded = false
 
 const tuileTab = ref('flight-updates')
+const isCompact = ref(
+  typeof window !== 'undefined' && window.matchMedia(MQ_COMPACT).matches,
+)
+const tuileHidden = ref(isCompact.value)
+
+const useBodyLayout = computed(() => isCompact.value && !tuileHidden.value)
+
+const tuileRootClass = computed(() => ({
+  'tuile-root--collapsed': tuileHidden.value,
+  'tuile-root--compact': isCompact.value,
+}))
+
+let mqCleanup = () => {}
+
+function onModalEscape(e) {
+  if (e.key === 'Escape' && useBodyLayout.value) tuileHidden.value = true
+}
+
+onMounted(() => {
+  const mq = window.matchMedia(MQ_COMPACT)
+  const syncCompact = () => {
+    isCompact.value = mq.matches
+  }
+  syncCompact()
+  mq.addEventListener('change', syncCompact)
+  mqCleanup = () => mq.removeEventListener('change', syncCompact)
+})
+
+onUnmounted(() => {
+  mqCleanup()
+  window.removeEventListener('keydown', onModalEscape)
+})
+
+watch(isCompact, (compact) => {
+  if (compact) tuileHidden.value = true
+  else tuileHidden.value = false
+})
+
+watch(useBodyLayout, (open) => {
+  if (open) window.addEventListener('keydown', onModalEscape)
+  else window.removeEventListener('keydown', onModalEscape)
+})
 
 async function loadFlightUpdatesFeed() {
   feedLoading.value = true
@@ -74,10 +119,89 @@ function formatFeedDate(pubDate) {
 </script>
 
 <template>
-  <aside class="tuile ds-panel ds-panel--glass" aria-live="polite">
-    <div class="tuile__tabs">
-      <DsTabs v-model="tuileTab" :tabs="TUILE_TABS" aria-label="Trajectory side panel" />
-    </div>
+  <div class="tuile-root" :class="tuileRootClass">
+    <button
+      v-if="tuileHidden"
+      type="button"
+      class="tuile__restore ds-focusable"
+      aria-label="Show trajectory panel"
+      title="Show panel"
+      @click="tuileHidden = false"
+    >
+      <svg
+        class="tuile__toggle-icon"
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <polyline points="15 18 9 12 15 6" />
+      </svg>
+    </button>
+    <Teleport to="body" :disabled="!useBodyLayout">
+      <div
+        class="tuile-portal-wrap artemis-tuile-modal-root"
+        :class="[
+          { 'tuile-portal-wrap--inline': !useBodyLayout },
+          { 'artemis-tuile-modal-root--active': useBodyLayout },
+        ]"
+      >
+        <div
+          v-if="useBodyLayout"
+          class="tuile-modal-backdrop artemis-tuile-modal__backdrop"
+          aria-hidden="true"
+          @click="tuileHidden = true"
+        />
+        <div
+          :class="
+            useBodyLayout
+              ? 'tuile-modal-stage artemis-tuile-modal__stage'
+              : 'tuile-portal-host--inline'
+          "
+        >
+        <aside
+          v-if="!tuileHidden"
+          class="tuile ds-panel ds-panel--glass"
+          :class="{ 'tuile--modal': useBodyLayout, 'artemis-tuile-modal__panel': useBodyLayout }"
+          aria-live="polite"
+          :role="useBodyLayout ? 'dialog' : undefined"
+          :aria-modal="useBodyLayout ? true : undefined"
+          aria-label="Trajectory side panel"
+        >
+      <div class="tuile__head">
+        <div class="tuile__tabs">
+          <DsTabs v-model="tuileTab" :tabs="TUILE_TABS" aria-label="Trajectory side panel" />
+        </div>
+        <button
+          type="button"
+          class="tuile__panel-toggle ds-btn ds-btn--ghost ds-focusable"
+          aria-label="Hide trajectory panel"
+          title="Hide panel"
+          @click="tuileHidden = true"
+        >
+          <svg
+            class="tuile__toggle-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </button>
+      </div>
 
     <div
       v-if="tuileTab === 'flight-updates'"
@@ -229,25 +353,104 @@ function formatFeedDate(pubDate) {
         </ul>
       </section>
     </div>
-  </aside>
+        </aside>
+        </div>
+      </div>
+    </Teleport>
+  </div>
 </template>
 
 <style scoped>
-.tuile {
+.tuile-root {
   position: absolute;
   top: var(--ds-space-4);
   right: var(--ds-space-4);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  max-height: calc(100% - 2 * var(--ds-space-4));
   width: min(360px, calc(100% - 2 * var(--ds-space-4)));
+}
+
+.tuile-root--collapsed {
+  width: auto;
+  max-width: none;
+}
+
+.tuile-root--compact {
+  z-index: 3;
+}
+
+.tuile-portal-wrap--inline {
+  display: contents;
+}
+
+.tuile-portal-host--inline {
+  display: contents;
+}
+
+.tuile {
+  width: 100%;
   max-height: calc(100% - 2 * var(--ds-space-4));
   overflow-y: auto;
   padding: var(--ds-space-4);
   font-size: var(--ds-font-size-sm);
 }
 
-.tuile__tabs {
+.tuile__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--ds-space-2);
   margin: 0 0 var(--ds-space-3);
   padding-bottom: var(--ds-space-3);
   border-bottom: 1px solid var(--ds-color-border-subtle);
+}
+
+.tuile__tabs {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.tuile__panel-toggle {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  margin: 0;
+  padding: 0;
+  align-self: center;
+}
+
+.tuile__toggle-icon {
+  display: block;
+}
+
+.tuile__restore {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--ds-color-border-default);
+  border-radius: var(--ds-radius-md);
+  background: var(--ds-color-surface-raised);
+  backdrop-filter: blur(var(--ds-blur-glass));
+  color: var(--ds-color-text-accent);
+  cursor: pointer;
+  transition:
+    background-color var(--ds-duration-fast) var(--ds-ease-standard),
+    border-color var(--ds-duration-fast) var(--ds-ease-standard);
+}
+
+.tuile__restore:hover {
+  background: var(--ds-color-accent-muted);
+  border-color: var(--ds-color-border-interactive);
 }
 
 .tuile__tabs :deep(.ds-tabs) {
@@ -479,5 +682,52 @@ function formatFeedDate(pubDate) {
   margin: var(--ds-space-4) 0 0;
   padding-top: var(--ds-space-3);
   border-top: 1px solid var(--ds-color-border-subtle);
+}
+</style>
+
+<style>
+/* Modale responsive : Teleport → body sans data-v scoped ; préfixe artemis-tuile-modal__ */
+.artemis-tuile-modal-root.artemis-tuile-modal-root--active {
+  position: fixed;
+  inset: 0;
+  z-index: var(--ds-z-modal);
+  pointer-events: none;
+}
+
+.artemis-tuile-modal-root--active .artemis-tuile-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: var(--ds-color-scrim);
+  pointer-events: auto;
+}
+
+.artemis-tuile-modal-root--active .artemis-tuile-modal__stage {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  box-sizing: border-box;
+  padding: 0;
+  min-height: 0;
+  pointer-events: none;
+}
+
+/* L’aside utilise margin pour les 16px sur les 4 côtés — évite l’ambiguïté de width:100% contre le padding du stage. */
+.artemis-tuile-modal-root--active aside.tuile.artemis-tuile-modal__panel {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: 100%;
+  box-sizing: border-box;
+  margin: var(--ds-space-4);
+  width: auto;
+  overflow-y: auto;
+  pointer-events: auto;
+  padding: var(--ds-space-4);
+  font-size: var(--ds-font-size-sm);
 }
 </style>

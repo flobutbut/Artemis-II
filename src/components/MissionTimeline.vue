@@ -165,6 +165,7 @@ function onKeydown(e) {
       <button
         type="button"
         class="mission-timeline__thumb"
+        :class="{ 'mission-timeline__thumb--live': live }"
         :style="{ left: `${thumbPct}%` }"
         role="slider"
         :aria-valuemin="sliderMin"
@@ -249,6 +250,16 @@ function onKeydown(e) {
   box-shadow: 0 0 0 1px var(--ds-color-neutral-ring);
   cursor: grab;
   pointer-events: auto;
+  transition:
+    background-color var(--ds-duration-fast) var(--ds-ease-standard),
+    box-shadow var(--ds-duration-fast) var(--ds-ease-standard);
+}
+
+.mission-timeline__thumb--live {
+  background: var(--ds-color-red-fill);
+  box-shadow:
+    0 0 0 1px var(--ds-color-red-ring),
+    var(--ds-shadow-red-soft);
 }
 
 .mission-timeline__thumb:active {
@@ -270,6 +281,23 @@ function onKeydown(e) {
   font-size: var(--ds-font-size-xs);
   color: var(--ds-color-text-secondary);
   font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 600px) {
+  .mission-timeline {
+    gap: var(--ds-space-2);
+    padding: var(--ds-space-2) var(--ds-space-3);
+  }
+
+  .mission-timeline__time {
+    display: none;
+  }
+}
+
+@media (max-width: 380px) {
+  :deep(.live-mode-button__label) {
+    display: none;
+  }
 }
 
 </style>

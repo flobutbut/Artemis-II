@@ -7,21 +7,26 @@
 - **three** r170 — WebGL scene, `OrbitControls`
 - **Design system**: `src/styles/tokens.css` + `src/styles/ui.css` (see `Documentation-design-system.md`)
 
+## Environment
+
+- **`.env.example`** — modèle versionné ; **`GITHUB_TOKEN`** (PAT GitHub) pour outils locaux (`gh`, scripts). Copier en **`.env`** (ignoré par git ; `.gitignore` contient `!.env.example` pour ne pas exclure le modèle). Ne pas préfixer les secrets par **`VITE_`** (exposition au navigateur).
+- L’app **n’injecte pas** ce token dans le front : `vite.config.js` ne charge pas `GITHUB_TOKEN` pour le client.
+
 ## Structure
 
 - `src/App.vue` — column layout + `mainTab` (trajectory vs info views) + scene area + shared `timelineLive` / `timelineAt` with `MissionTimeline.vue`
 - `src/components/DsTabs.vue` — reusable tablist (design tokens); `variant` `default` | `ghost`; optional `ariaLabel` for nested tablists (e.g. `TuileInfos`)
 - `src/components/MissionInfoPanel.vue` — Crew / Ship / Artemis mission copy (data from `src/data/mission-info.js`); **Crew & Ship photos** served from `public/crew/*.jpg` and `public/ship/*.jpg` (bundled copies; attribution links still point to NASA Image Library / Wikipedia / Commons)
 - `src/data/mission-info.js` — editorial summaries + NASA links; `portrait` / `shipPhoto` use `publicUrl('crew/…')` / `publicUrl('ship/…')` plus alt, credit, external detail links
-- `src/components/MissionTimeline.vue` — mission time cursor (OEM), `v-model:live` + `v-model:at`, `LiveModeButton`
+- `src/components/MissionTimeline.vue` — mission time cursor (OEM), `v-model:live` + `v-model:at`, `LiveModeButton` ; curseur (thumb) **rouge** (`--ds-color-red-fill`, etc.) lorsque `live === true`, cyan sinon
 - `src/components/LiveModeButton.vue` — bordered LIVE toggle (dot + caps); uses generic `--ds-color-red-*` / `--ds-color-neutral-*` tokens
-- `src/components/AppHeader.vue` — mission patch, title, `bar-center` en `align-self: stretch` + `DsTabs` ghost `height: 100%` pour ancrer le soulignement en bas de la barre ; “Sources” (`SourcesButton.vue`)
+- `src/components/AppHeader.vue` — mission patch, title, `bar-center` en `align-self: stretch` + `DsTabs` ghost `height: 100%` pour ancrer le soulignement en bas de la barre ; **≤600px** : burger + menu (voir section Responsive)
 - `public/artemis-ii-patch.svg` — Artemis II patch (copy of “Artemis II patch” on [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Artemis_II_patch.svg), NASA work / public domain)
 - `public/crew/*.jpg` — group + astronaut portraits (Wikimedia Commons + NASA); **resized for UI** (~768 px longest edge on portraits, ~1440 px on group) via `sips -Z` so cards don’t downscale 4k sources
 - `public/ship/*.jpg` — Ship tab photos (NASA); **max 1280 px** longest edge
 - `src/components/SourcesModal.vue` — modal (Teleport) listing ephemerides, NASA/three.js links, media usage
-- `src/components/AppFooter.vue` — texture credits, AROW, Horizons API
-- `src/components/TuileInfos.vue` — Trajectory HUD tile: `DsTabs` → **Flight updates** (default tab; NASA Missions blog RSS, Artemis II title filter, fetched on first open) | **NASA Live** (YouTube iframe embed id `6RwfNBtepa4`, mounted only when tab active) | **JPL data** (Horizons measurements / trajectory copy; tab label shortened from full “JPL Horizons” name)
+- `src/components/AppFooter.vue` — texture credits, AROW, Horizons API ; bouton **Sources** (`SourcesButton.vue`) + `SourcesModal` (aligné à droite, `flex` + `space-between`)
+- `src/components/TuileInfos.vue` — Trajectory HUD tile: `DsTabs` → **Flight updates** (default tab; NASA Missions blog RSS, Artemis II title filter, fetched on first open) | **NASA Live** (YouTube iframe embed id `6RwfNBtepa4`, mounted only when tab active) | **JPL data** (Horizons measurements / trajectory copy; tab label shortened from full “JPL Horizons” name). **Masquage** : bouton icône `ds-btn--ghost` à droite des onglets ; panneau en `v-if` pour démonter l’iframe ; bouton **réouvrir** (style glass) quand la tuile est repliée. **≤600px** : tuile **fermée par défaut** ; ouverte → **`Teleport` vers `body`** : fond plein écran + scrim ; calque **`.artemis-tuile-modal__stage`** en **colonne flex** avec **`padding: var(--ds-space-4)`** ; le panneau en **`flex: 1`** remplit l’espace **entre** ces 16px (pas de centrage vertical, qui laissait de larges bandes). **Important** : le layout modale est en **CSS non-scopé** dans `TuileInfos.vue` (classes `artemis-tuile-modal__*`), car le DOM téléporté sous `body` **ne reçoit pas** l’attribut `data-v-` du `<style scoped>` — sans cela, `position: fixed` / padding ne s’appliquaient pas.
 - `src/lib/public-path.js` — `publicUrl()` for assets under `public/` when the app uses a subpath (`import.meta.env.BASE_URL`, e.g. GitHub Pages project site)
 - `src/lib/nasa-missions-blog-feed.js` — fetch `${BASE_URL}nasa-missions-blog-feed`, `DOMParser` RSS → items whose title matches `Artemis II` → `{ title, link, pubDate }[]`
 - `src/lib/horizons.js` — Horizons client (SOE parse, UTC dates, ecliptic J2000 → Three.js); `withUniformSampleTimes` / `interpolateTimedRows` for timeline scrub
@@ -29,6 +34,15 @@
 - Proxy `/jpl-horizons`: `vite.config.js` (dev + preview) and `netlify.toml` (prod) → `https://ssd.jpl.nasa.gov/api/horizons.api` (no open CORS from JPL)
 - Proxy `/nasa-missions-blog-feed` → `https://www.nasa.gov/blogs/missions/feed/` (RSS XML; browser fetch same-origin)
 - Textures: remote load from `threejs.org` (three.js examples, MIT), `TextureLoader` + `crossOrigin: anonymous`
+
+## Responsive (chrome HTML)
+
+Media queries `@media (max-width: …)` dans les `<style scoped>` des composants (pas de fichier CSS dédié) :
+
+- **`max-width: 600px`** — `AppHeader.vue` : **navigation compacte** — `matchMedia('(max-width: 600px)')` masque la `tablist` inline et affiche un **bouton burger** à droite ; les onglets sont dans un panneau (`DsTabs` variante `default`, colonne) **téléporté** dans `body` (`position: fixed`, `top` calé sous le header pour rester visible malgré `overflow: hidden` sur `#app`), fond semi-transparent cliquable pour fermer, **Échap** et fermeture au choix d’un onglet. Barre plus haute qu’avant : **`padding` vertical** `var(--ds-space-4)`, titre **`--ds-font-size-2xl`**, logo **`--ds-size-logo`**, `gap` brand **`--ds-space-3`**, burger un peu plus grand (traits 16×2px). `MissionTimeline.vue` : padding et gap réduits ; `.mission-timeline__time` masqué. `AppFooter.vue` : padding réduit, `font-size: var(--ds-font-size-xs)`, `gap` interne réduit entre crédits et Sources.
+- **`max-width: 380px`** — `MissionTimeline.vue` : `:deep(.live-mode-button__label)` masqué (bouton Live : point seul).
+
+La colonne principale (`App.vue`) reste `overflow: hidden` ; aucun scroll parasite n’est ajouté par ces règles.
 
 ## Scale
 
